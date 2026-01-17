@@ -11,11 +11,41 @@
             --text-color: #ffffff;
             --accent-color: #ff4757;
             
-            /* UKURAN DEFAULT (DESKTOP) */
-            --card-width: 240px; 
-            --card-height: 360px;
+            /* UKURAN DEFAULT (DESKTOP) - Dikurangi 10% */
+            /* 240px -> 216px, 360px -> 324px */
+            --card-width: 216px; 
+            --card-height: 324px;
             
             --dynamic-bg: #121212;
+        }
+
+        /* EFEK TEKS WARNA-WARNI (Sesuai Urutan Kelompok Kartu) */
+        .rainbow-text {
+            /* Urutan warna: Merah -> Biru -> Ungu -> Hitam -> Orange -> Hijau -> Kuning */
+            background: linear-gradient(to right, 
+                #ff4757, /* Merah (Serangan Verbal) */
+                #00d2d3, /* Biru (Identitas) */
+                #9c27b0, /* Ungu (Manipulasi) */
+                #57606f, /* Hitam/Abu (Pengucilan) */
+                #ff9f43, /* Orange (Provokasi) */
+                #00e170, /* Hijau (Action) */
+                #ffd700  /* Kuning (Wisdom) */
+            );
+            background-size: 100% auto;
+            
+            color: #fff; /* Fallback */
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            font-weight: 800; 
+            display: inline-block;
+        }
+
+        @keyframes rainbowMove {
+            to {
+                background-position: 200% center;
+            }
         }
 
         /* Responsive Variables untuk HP */
@@ -91,7 +121,8 @@
         }
 
         .welcome-message h2 {
-            font-size: clamp(2.5rem, 6vw, 4rem); /* Sedikit diperbesar */
+            /* Font size dikurangi ~10% untuk desktop */
+            font-size: clamp(2.2rem, 5.5vw, 3.6rem); 
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 5px; 
@@ -242,6 +273,14 @@
             transition: transform 1.5s cubic-bezier(0.2, 0.9, 0.1, 1);
         }
 
+        .card-content { 
+            text-align: center; padding: 10px; pointer-events: none; 
+            transform: translateZ(20px); 
+        }
+        /* Icon size dikurangi 10% (3rem -> 2.7rem) */
+        .card-icon { font-size: 2.7rem; margin-bottom: 10px; display: block; }
+        .card-name-preview { font-size: 1rem; font-weight: bold; color: #ccc; letter-spacing: 1px; }
+
         #coverCard { 
             transform: rotate(0deg) translate(0,0); 
             z-index: 100; 
@@ -275,7 +314,8 @@
         }
 
         .info-title {
-            font-size: clamp(1.8rem, 5vw, 3.5rem);
+            /* Font size dikurangi 10% */
+            font-size: clamp(1.6rem, 4.5vw, 3.2rem);
             font-weight: 700; text-transform: uppercase;
             margin-bottom: 10px; color: var(--accent-color);
             line-height: 1; text-shadow: 0 0 20px rgba(0,0,0,0.5);
@@ -628,7 +668,7 @@
                 if (offset > count / 2) offset -= count;
 
                 const isMobile = window.innerWidth < 600;
-                const dist = isMobile ? 80 : 220;
+                const dist = isMobile ? 80 : 200; // Adjusted for desktop size
 
                 const translateX = offset * dist; 
                 // Efek kedalaman Z agar tidak clipping
