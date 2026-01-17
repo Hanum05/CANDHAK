@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kartu Edukasi Digital Safety</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --accent-color: #ff4757;
+            
+            /* UKURAN DEFAULT (DESKTOP) */
+            --card-width: 240px; 
+            --card-height: 360px;
+            
+            --dynamic-bg: #121212;
+        }
+
+        /* Responsive Variables untuk HP */
+        @media (max-width: 768px) {
+            :root {
+                /* UKURAN DIPERKECIL: 36vw */
+                --card-width: 36vw; 
+                --card-height: calc(36vw * 1.5);
+            }
+            
+            .card-icon { font-size: 1.8rem !important; margin-bottom: 5px !important; }
+            .card-name-preview { font-size: 0.7rem !important; letter-spacing: 0.5px !important; }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overscroll-behavior: none;
+        }
+
+        /* BACKGROUND DINAMIS */
+        .ambient-background {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background-color: var(--dynamic-bg);
+            -webkit-mask-image: radial-gradient(circle at center, black 0%, transparent 80%);
+            mask-image: radial-gradient(circle at center, black 0%, transparent 80%);
+            opacity: 0; 
+            transition: background-color 1.2s ease, opacity 1s ease;
+        }
+        .ambient-background.active { opacity: 0.6; }
+
+        /* Container Utama */
+        .stage {
+            position: relative;
+            width: 100%; height: 100vh; 
+            display: flex; align-items: center;
+            z-index: 10;
+            perspective: 1200px; 
+            overflow: hidden;
+            flex-direction: column; 
+            justify-content: center;
+        }
+
+        /* WELCOME MESSAGE */
+        .welcome-message {
+            position: absolute;
+            bottom: 15%; 
+            width: 100%;
+            text-align: center;
+            z-index: 5;
+            pointer-events: none; 
+            opacity: 0;
+            transform: translateY(20px);
+            animation: welcomeFadeIn 1s ease-out 1.4s forwards;
+        }
+
+        .welcome-message h2 {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--accent-color);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .welcome-message p {
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            color: #aaa;
+            font-weight: 300;
+        }
+
+        @keyframes welcomeFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stage.active .welcome-message {
+            opacity: 0 !important;
+            transform: translateY(100px) !important; 
+            transition: opacity 1.2s ease, transform 1.2s ease; 
+        }
+
+        /* MODE TUMPUKAN (STACK) */
+        @keyframes openingBounce {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(1.8) rotate(-5deg); }
+            60% { opacity: 1; transform: translate(-50%, -50%) scale(0.9) rotate(2deg); }
+            80% { transform: translate(-50%, -50%) scale(1.05) rotate(-1deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .card-stack-container {
+            position: absolute;
+            left: 50%; top: 50%;
+            width: var(--card-width); height: var(--card-height);
+            z-index: 10;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            animation: openingBounce 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0; 
+            transition: left 1s cubic-bezier(0.25, 0.8, 0.25, 1), transform 1s cubic-bezier(0.25, 0.8, 0.25, 1), top 1s ease;
+            transform-style: preserve-3d; 
+        }
+
+        /* DESKTOP DEFAULT: Geser ke kiri saat aktif */
+        .stage.active .card-stack-container {
+            left: 25%; 
+            transform: translate(-25%, -50%); 
+            animation: none; 
+            opacity: 1;
+        }
+
+        /* MODE GALERI (CAROUSEL) */
+        .stage.gallery-mode .card-stack-container {
+            left: 50% !important; 
+            top: 40% !important; 
+            transform: translate(-50%, -50%) !important;
+            width: 100%; height: 50vh; 
+            cursor: grab;
+        }
+        .stage.gallery-mode .card-stack-container:active { cursor: grabbing; }
+
+        /* VISUAL KARTU */
+        .card {
+            position: absolute;
+            width: var(--card-width); height: var(--card-height);
+            left: 50%; top: 50%;
+            margin-left: calc(var(--card-width) * -0.5);
+            margin-top: calc(var(--card-height) * -0.5);
+            background: linear-gradient(145deg, #2d3436, #000000);
+            border: 2px solid #555;
+            border-radius: 10px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: -5px 5px 15px rgba(0,0,0,0.5); 
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            user-select: none;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            overflow: hidden; 
+        }
+        
+        .card::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(125deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.05) 60%, rgba(255,255,255,0) 100%);
+            transform: translateX(-100%);
+            transition: transform 0.5s;
+            pointer-events: none;
+        }
+        .card:hover::after {
+            transform: translateX(100%);
+            transition: transform 0.8s;
+        }
+
+        .stage.gallery-mode .card {
+            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .stage.gallery-mode .card.active-tilt {
+            transition: transform 0.1s ease-out; 
+            z-index: 200 !important;
+        }
+
+        .stage.gallery-mode.scattering .card {
+            transition: transform 1.5s cubic-bezier(0.2, 0.9, 0.1, 1);
+        }
+
+        .card-content { 
+            text-align: center; padding: 10px; pointer-events: none; 
+            transform: translateZ(20px); 
+        }
+        .card-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
+        .card-name-preview { font-size: 1rem; font-weight: bold; color: #ccc; letter-spacing: 1px; }
+
+        #coverCard { 
+            transform: rotate(0deg) translate(0,0); 
+            z-index: 100; 
+            background: #ff4757; 
+            border: 4px solid white;
+            color: white;
+        }
+
+        /* INFO PANEL - DESKTOP DEFAULT */
+        .info-panel {
+            position: absolute;
+            right: 5%; top: 50%;
+            transform: translateY(-50%) translateX(30px);
+            width: 45%; opacity: 0;
+            transition: all 0.8s ease;
+            pointer-events: none;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+
+        .stage.active:not(.gallery-mode) .info-panel {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+            pointer-events: auto;
+        }
+
+        /* Shared style for Gallery Mode & Mobile View */
+        .stage.gallery-mode .info-panel {
+            right: auto; top: auto; left: 0; bottom: 5%;
+            width: 100%; height: auto;
+            transform: translateY(0);
+            opacity: 1;
+            align-items: center; text-align: center; padding: 0 20px;
+        }
+
+        .info-title {
+            font-size: clamp(1.8rem, 5vw, 3.5rem);
+            font-weight: 700; text-transform: uppercase;
+            margin-bottom: 10px; color: var(--accent-color);
+            line-height: 1; text-shadow: 0 0 20px rgba(0,0,0,0.5);
+            transition: color 1s ease; 
+        }
+        .stage.gallery-mode .info-title { font-size: clamp(1.5rem, 4vw, 2.5rem); margin-bottom: 5px; }
+
+        .info-desc {
+            font-size: clamp(0.75rem, 2.5vw, 1.2rem);
+            line-height: 1.4; color: #dcdcdc;
+            margin-bottom: 20px; text-shadow: 0 0 10px rgba(0,0,0,0.8);
+            max-width: 600px; 
+        }
+        .stage.gallery-mode .info-desc {
+            margin-bottom: 10px; font-size: clamp(0.7rem, 2.5vw, 1rem);
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+        }
+
+        .stats-box { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .stat {
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(5px);
+            padding: 8px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
+            font-size: clamp(0.7rem, 2vw, 1rem); white-space: nowrap;
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        /* ANIMASI TERBANG */
+        @keyframes flyToTop {
+            0% { transform: translateX(0) scale(1) rotate(var(--start-rot)); z-index: 0; opacity: 1; }
+            50% { transform: translateX(120%) translateY(-20%) scale(1.1) rotate(15deg); z-index: 200; opacity: 1; }
+            100% { transform: translateX(0) scale(1) rotate(var(--end-rot)); z-index: 200; }
+        }
+        
+        @media (max-width: 768px) {
+            @keyframes flyToTop {
+                0% { transform: translate(0, 0) scale(1) rotate(var(--start-rot)); z-index: 0; opacity: 1; }
+                50% { transform: translate(0, -50%) scale(1.1) rotate(10deg); z-index: 200; opacity: 1; }
+                100% { transform: translate(0, 0) scale(1) rotate(var(--end-rot)); z-index: 200; }
+            }
+        }
+
+        .card.animating { animation: flyToTop 0.6s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); transition: none; }
+
+        /* HINTS */
+        .hint, .swipe-hint {
+            position: absolute; text-align: center; opacity: 0.7; font-size: 0.8rem;
+            animation: bounce 2s infinite; color: white; pointer-events: none;
+            width: 100%;
+        }
+        .hint { bottom: -60px; left: 0; }
+        .stage.active .hint { display: none; }
+        .swipe-hint { display: none; bottom: 25vh; left: 0; z-index: 50; text-shadow: 0 2px 4px black; }
+        .stage.gallery-mode .swipe-hint { display: block; }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-5px);}
+            60% {transform: translateY(-2px);}
+        }
+
+        /* ---------------------------------------------------- */
+        /* MEDIA QUERIES KHUSUS MOBILE (Layout Fix)             */
+        /* ---------------------------------------------------- */
+        @media (max-width: 768px) {
+            /* 1. Posisi Kartu (35% dari atas) */
+            .stage.active .card-stack-container,
+            .stage.gallery-mode .card-stack-container {
+                left: 50% !important;
+                top: 35% !important; 
+                transform: translate(-50%, -50%) !important;
+            }
+
+            /* 2. Info Panel (Menempel tepat di bawah kartu) */
+            .info-panel {
+                right: auto; left: 0; 
+                width: 100%;
+                /* Rumus posisi start: 35% + 0.55 tinggi kartu + margin */
+                top: calc(35% + (var(--card-height) * 0.55) + 20px);
+                bottom: 0; 
+                height: auto;
+                padding: 10px 20px;
+                justify-content: flex-start; 
+                align-items: center;
+                text-align: center;
+                transform: none !important; 
+                opacity: 0; 
+            }
+
+            .stage.active:not(.gallery-mode) .info-panel,
+            .stage.gallery-mode .info-panel {
+                opacity: 1;
+                pointer-events: auto;
+            }
+            
+            .info-title { margin-bottom: 5px; font-size: 1.8rem; }
+            .info-desc { 
+                font-size: 0.9rem; 
+                line-height: 1.3;
+                max-width: 100%;
+                max-height: 25vh; 
+                overflow-y: auto; 
+            }
+            .stage.gallery-mode .swipe-hint { bottom: 10%; font-size: 0.7rem; opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-background" id="ambientBg"></div>
+
+    <div class="stage" id="stage">
+        
+        <div class="welcome-message">
+            <h2>Zona Literasi Digital</h2>
+            <p>Klik tumpukan untuk mempelajari kartu</p>
+        </div>
+
+        <div class="card-stack-container" id="stack">
+            <!-- Kartu Sampul -->
+            <div class="card" id="coverCard" style="border-color: #fff;">
+                <div class="card-content">
+                    <h1 style="font-size: 6vmin; line-height: 1;">CYBER<br>SAFETY</h1>
+                    <p style="font-size: 0.8rem; margin-top:10px; opacity: 0.8;">Tap to Start</p>
+                </div>
+            </div>
+
+            <div class="hint">Klik tumpukan kartu</div>
+            <div class="swipe-hint">↔️ Geser atau Arahkan Mouse</div>
+        </div>
+
+        <div class="info-panel" id="infoPanel">
+            <h1 class="info-title" id="infoTitle">Cyber Safety</h1>
+            <p class="info-desc" id="infoDesc">Memuat data kartu...</p>
+            <div class="stats-box">
+                <!-- Statistik Edukasi -->
+                <div class="stat">💥 Dampak: <span id="infoAtk">-</span></div>
+                <div class="stat">⚠️ Resiko: <span id="infoDef">-</span></div>
+                <div class="stat" id="rarityBadge" style="display:none; background: #ffd700; color: black; font-weight:bold;">TIPE</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA KARTU EDUKASI (45 Kartu) ---
+        // Kelompok 1: Merah (#ff4757) - Serangan Verbal
+        // Kelompok 2: Biru Cyan (#00d2d3) - Identitas & Privasi
+        // Kelompok 3: Ungu (#9c27b0) - Manipulasi Konten
+        // Kelompok 4: Abu-abu Gelap (#57606f) - Pengucilan Sosial
+        // Kelompok 5: Oranye (#ff9f43) - Provokasi
+        // Kelompok 6: Hijau Neon (#00e170) - Action Cards
+        // Kelompok 7: Emas (#ffd700) - Wisdom Cards
+        
+        const cardsData = [
+            // KELOMPOK 1: SERANGAN VERBAL
+            { id: 1, title: "Flaming", color: "#ff4757", icon: "🔥", atk: "Tinggi", def: "Medium", rarity: "Agresi Verbal", desc: "Mengirim pesan penuh amarah dan makian di kolom komentar atau chat untuk memancing keributan." },
+            { id: 2, title: "Insulting", color: "#ff4757", icon: "🤬", atk: "Tinggi", def: "Medium", rarity: "Agresi Verbal", desc: "Mengolok-olok kekurangan fisik, penampilan, atau kemampuan seseorang (Body Shaming)." },
+            { id: 3, title: "Spamming Hate", color: "#ff4757", icon: "📨", atk: "Medium", def: "Rendah", rarity: "Agresi Verbal", desc: "Membanjiri notifikasi seseorang dengan pesan kebencian berulang-ulang hingga mengganggu." },
+            { id: 4, title: "Threatening", color: "#ff4757", icon: "☠️", atk: "Ekstrem", def: "Tinggi", rarity: "Agresi Verbal", desc: "Mengancam akan menyakiti fisik, mendatangi rumah korban, atau membahayakan nyawa." },
+            { id: 5, title: "Slurring", color: "#ff4757", icon: "📢", atk: "Tinggi", def: "Tinggi", rarity: "Agresi Verbal", desc: "Menggunakan kata-kata kasar yang menghina suku, ras, agama, atau golongan tertentu (SARA)." },
+            { id: 6, title: "Mocking", color: "#ff4757", icon: "🤡", atk: "Medium", def: "Rendah", rarity: "Agresi Verbal", desc: "Menertawakan kegagalan, kesedihan, atau musibah yang dialami orang lain sebagai bahan lelucon." },
+            
+            // KELOMPOK 2: IDENTITAS & PRIVASI
+            { id: 7, title: "Impersonation", color: "#00d2d3", icon: "🎭", atk: "Tinggi", def: "Tinggi", rarity: "Identitas", desc: "Membuat akun palsu memakai nama dan foto teman untuk menipu orang lain atau merusak reputasi." },
+            { id: 8, title: "Account Hijack", color: "#00d2d3", icon: "🔐", atk: "Ekstrem", def: "Tinggi", rarity: "Identitas", desc: "Mencuri kata sandi dan mengambil alih akun orang lain untuk disalahgunakan." },
+            { id: 9, title: "Doxing", color: "#00d2d3", icon: "📍", atk: "Ekstrem", def: "Ekstrem", rarity: "Identitas", desc: "Menyebarkan data pribadi seperti nomor HP, alamat rumah, atau sekolah teman tanpa izin." },
+            { id: 10, title: "Catfishing", color: "#00d2d3", icon: "🎣", atk: "Tinggi", def: "Medium", rarity: "Identitas", desc: "Menyamar menjadi orang lain (biasanya profil menarik) untuk menipu atau menjebak korban secara emosional." },
+            { id: 11, title: "Stalking", color: "#00d2d3", icon: "🕵️", atk: "Medium", def: "Tinggi", rarity: "Identitas", desc: "Memantau gerak-gerik online seseorang secara obsesif, menakutkan, dan mengganggu privasi." },
+            { id: 12, title: "Privacy Breach", color: "#00d2d3", icon: "👁️", atk: "Tinggi", def: "Tinggi", rarity: "Identitas", desc: "Mengintip isi chat pribadi (DM) orang lain dan menyebarkannya ke publik (Screenshot Sebar)." },
+
+            // KELOMPOK 3: MANIPULASI KONTEN (Ungu)
+            { id: 13, title: "Shaming Photo", color: "#9c27b0", icon: "📸", atk: "Tinggi", def: "Medium", rarity: "Manipulasi", desc: "Mengunggah foto memalukan teman tanpa persetujuan untuk mempermalukannya secara visual." },
+            { id: 14, title: "Meme-ing", color: "#9c27b0", icon: "🤪", atk: "Medium", def: "Rendah", rarity: "Manipulasi", desc: "Mengedit foto teman menjadi lelucon atau meme yang merendahkan harga dirinya." },
+            { id: 15, title: "Deepfake", color: "#9c27b0", icon: "🤖", atk: "Ekstrem", def: "Ekstrem", rarity: "Manipulasi", desc: "Mengubah foto/video teman seolah melakukan hal buruk/asusila menggunakan AI atau editing canggih." },
+            { id: 16, title: "Live Shaming", color: "#9c27b0", icon: "📹", atk: "Tinggi", def: "Tinggi", rarity: "Manipulasi", desc: "Melakukan live streaming khusus untuk membicarakan keburukan atau aib orang lain kepada follower." },
+            { id: 17, title: "Status Mockery", color: "#9c27b0", icon: "💬", atk: "Medium", def: "Rendah", rarity: "Manipulasi", desc: "Membuat status atau story yang menyindir secara spesifik (nyinyir) untuk memancing reaksi publik." },
+            { id: 18, title: "Video Mocking", color: "#9c27b0", icon: "🎥", atk: "Tinggi", def: "Tinggi", rarity: "Manipulasi", desc: "Merekam diam-diam teman yang sedang melakukan kesalahan atau kecelakaan lalu mengunggahnya." },
+
+            // KELOMPOK 4: PENGUCILAN SOSIAL (Abu-abu Gelap)
+            { id: 19, title: "Group Kick-out", color: "#57606f", icon: "🚪", atk: "Medium", def: "Rendah", rarity: "Pengucilan", desc: "Sengaja mengeluarkan satu orang dari grup chat kelas atau pertemanan tanpa alasan yang jelas." },
+            { id: 20, title: "Silent Treat", color: "#57606f", icon: "😶", atk: "Tinggi", def: "Rendah", rarity: "Pengucilan", desc: "Mengajak orang lain untuk kompak mengabaikan pesan, sapaan, atau keberadaan satu orang." },
+            { id: 21, title: "Blacklisting", color: "#57606f", icon: "🚫", atk: "Medium", def: "Medium", rarity: "Pengucilan", desc: "Menghasut orang lain agar tidak mem-follow, berteman, atau berinteraksi dengan seseorang." },
+            { id: 22, title: "Exclusion", color: "#57606f", icon: "🎮", atk: "Rendah", def: "Rendah", rarity: "Pengucilan", desc: "Sengaja tidak mengajak teman tertentu saat bermain game online (mabar) atau aktivitas grup lainnya." },
+            { id: 23, title: "Hate Campaign", color: "#57606f", icon: "📢", atk: "Ekstrem", def: "Tinggi", rarity: "Pengucilan", desc: "Mengajak orang banyak melakukan 'Cancel Culture' atau membenci seseorang tanpa dasar yang kuat." },
+            { id: 24, title: "Voting Bully", color: "#57606f", icon: "📊", atk: "Tinggi", def: "Medium", rarity: "Pengucilan", desc: "Membuat polling di media sosial untuk memilih 'siapa yang paling tidak disukai' atau 'paling aneh' di kelas." },
+
+            // KELOMPOK 5: PROVOKASI (Oranye)
+            { id: 25, title: "Hoax Spreading", color: "#ff9f43", icon: "📰", atk: "Tinggi", def: "Tinggi", rarity: "Provokasi", desc: "Menyebarkan berita bohong atau fitnah agar seseorang dibenci oleh lingkungan sosialnya." },
+            { id: 26, title: "Cyber-baiting", color: "#ff9f43", icon: "🎣", atk: "Medium", def: "Tinggi", rarity: "Provokasi", desc: "Memprovokasi guru atau teman agar marah saat kelas online, lalu merekam reaksinya untuk dipermalukan." },
+            { id: 27, title: "Griefing", color: "#ff9f43", icon: "💣", atk: "Rendah", def: "Medium", rarity: "Provokasi", desc: "Sengaja merusak hasil karya, bangunan, atau progres game teman hanya untuk kesenangan pribadi." },
+            { id: 28, title: "Dogpiling", color: "#ff9f43", icon: "🐕", atk: "Ekstrem", def: "Tinggi", rarity: "Provokasi", desc: "Ikut-ikutan menghujat orang yang sedang viral (keroyokan) tanpa mengetahui duduk permasalahan sebenarnya." },
+            { id: 29, title: "False Report", color: "#ff9f43", icon: "🚩", atk: "Tinggi", def: "Tinggi", rarity: "Provokasi", desc: "Melaporkan akun teman secara massal (mass report) ke platform padahal dia tidak melakukan kesalahan." },
+            { id: 30, title: "Peer Pressure", color: "#ff9f43", icon: "😈", atk: "Tinggi", def: "Ekstrem", rarity: "Provokasi", desc: "Memaksa teman melakukan challenge berbahaya atau memalukan demi pengakuan dalam pertemanan." },
+
+            // KELOMPOK 6: ACTION CARDS (Hijau Neon)
+            { id: 31, title: "Kartu Lapor", color: "#00e170", icon: "📢", atk: "Proteksi", def: "Legal", rarity: "Action Tool", desc: "Melaporkan konten atau akun jahat ke pihak aplikasi (Instagram/TikTok/Game) agar ditindaklanjuti." },
+            { id: 32, title: "Kartu Blokir", color: "#00e170", icon: "🚫", atk: "Proteksi", def: "Instan", rarity: "Action Tool", desc: "Memutuskan akses komunikasi total. Pelaku tidak bisa lagi melihat profil, mengirim pesan, atau menandaimu." },
+            { id: 33, title: "Kartu Privasi", color: "#00e170", icon: "🔒", atk: "Preventif", def: "Aman", rarity: "Action Tool", desc: "Mengatur akun menjadi 'Private', membatasi siapa yang bisa komentar, dan menyaring kata kasar otomatis." },
+            { id: 34, title: "Screenshot", color: "#00e170", icon: "📸", atk: "Bukti", def: "Penting", rarity: "Action Tool", desc: "Mengambil tangkapan layar bukti chat atau komentar jahat sebelum dihapus pelaku, untuk barang bukti laporan." },
+            { id: 35, title: "Restrict", color: "#00e170", icon: "😶", atk: "Kontrol", def: "Diam", rarity: "Action Tool", desc: "Membatasi interaksi akun pengganggu tanpa mereka tahu (Shadowban). Komentar mereka hanya terlihat oleh mereka sendiri." },
+            { id: 36, title: "Turn Off Comm", color: "#00e170", icon: "🔇", atk: "Damai", def: "Instan", rarity: "Action Tool", desc: "Mematikan kolom komentar pada postingan tertentu untuk menghentikan perdebatan atau ujaran kebencian." },
+
+            // KELOMPOK 7: WISDOM CARDS (Emas/Kuning)
+            { id: 37, title: "Kartu Support", color: "#ffd700", icon: "🤝", atk: "Empati", def: "Positif", rarity: "Wisdom", desc: "Memberi semangat dan dukungan kepada korban bullying agar mereka tidak merasa sendirian." },
+            { id: 38, title: "Verifikasi", color: "#ffd700", icon: "✅", atk: "Logika", def: "Kritis", rarity: "Wisdom", desc: "Mengecek kebenaran sebuah berita atau informasi sebelum emosi terpancing dan ikut menyebarkannya." },
+            { id: 39, title: "Literasi", color: "#ffd700", icon: "📚", atk: "Wawasan", def: "Bijak", rarity: "Wisdom", desc: "Memahami aturan komunitas dan berhenti menyebarkan konten yang belum tentu benar atau bermanfaat." },
+            { id: 40, title: "Think First", color: "#ffd700", icon: "🧠", atk: "Kendali", def: "Tenang", rarity: "Wisdom", desc: "T.H.I.N.K (True, Helpful, Inspiring, Necessary, Kind). Pikirkan 5 hal ini sebelum memposting sesuatu." },
+            { id: 41, title: "Digital Detox", color: "#ffd700", icon: "🌿", atk: "Sehat", def: "Mental", rarity: "Wisdom", desc: "Beristirahat sejenak dari media sosial untuk menjaga kesehatan mental dan menikmati dunia nyata." },
+            { id: 42, title: "Berani Bicara", color: "#ffd700", icon: "🗣️", atk: "Berani", def: "Solusi", rarity: "Wisdom", desc: "Melaporkan kejadian bullying yang dialami atau dilihat kepada orang dewasa tepercaya (Orang tua/Guru)." },
+            { id: 43, title: "Kartu Pause", color: "#ffd700", icon: "⏸️", atk: "Sabar", def: "Aman", rarity: "Wisdom", desc: "Mengambil jeda 10 detik saat emosi memuncak sebelum menekan tombol kirim pada pesan atau komentar." },
+            { id: 44, title: "Netizen Hijau", color: "#ffd700", icon: "👍", atk: "Positif", def: "Keren", rarity: "Wisdom", desc: "Secara aktif memberikan komentar positif dan apresiasi pada karya teman untuk membangun lingkungan sehat." },
+            { id: 45, title: "Pass Protect", color: "#ffd700", icon: "🔑", atk: "Keamanan", def: "Wajib", rarity: "Wisdom", desc: "Mengganti kata sandi secara berkala dan mengaktifkan 2FA agar akun tidak mudah dibajak orang lain." }
+        ];
+
+        const stage = document.getElementById('stage');
+        const stack = document.getElementById('stack');
+        const ambientBg = document.getElementById('ambientBg');
+        
+        // Elemen Info
+        const infoTitle = document.getElementById('infoTitle');
+        const infoDesc = document.getElementById('infoDesc');
+        const infoAtk = document.getElementById('infoAtk'); // Impact
+        const infoDef = document.getElementById('infoDef'); // Risk
+        const rarityBadge = document.getElementById('rarityBadge');
+
+        let isStarted = false;
+        let isAnimating = false;
+        let isGalleryMode = false;
+        let cardsSeen = 0;
+        
+        // Carousel Logic
+        let activeIndex = 0; 
+        let cardElements = []; 
+
+        function initCards() {
+            // Render urutan terbalik untuk visual stack
+            cardsData.forEach((data, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.id = index;
+                card.style.borderColor = data.color;
+
+                card.innerHTML = `
+                    <div class="card-content">
+                        <span class="card-icon">${data.icon}</span>
+                        <span class="card-name-preview">${data.title}</span>
+                    </div>
+                `;
+                
+                const cover = document.getElementById('coverCard');
+                stack.insertBefore(card, cover);
+            });
+        }
+        initCards();
+
+        stack.addEventListener('click', handleStackClick);
+
+        function handleStackClick(e) {
+            if (isGalleryMode) return;
+            if (isAnimating) return; 
+            
+            if (!isStarted) {
+                startGame();
+            } else {
+                if (cardsSeen >= cardsData.length) {
+                    enterGalleryMode();
+                } else {
+                    swapBottomToTop();
+                }
+            }
+        }
+
+        function startGame() {
+            isStarted = true;
+            isAnimating = true; 
+            ambientBg.classList.add('active');
+            stage.classList.add('active'); 
+
+            const cover = document.getElementById('coverCard');
+            cover.style.transform = "translateY(-100vh) rotate(20deg)";
+            cover.style.opacity = "0";
+            setTimeout(() => cover.remove(), 500);
+
+            setTimeout(() => {
+                swapBottomToTop();
+            }, 600);
+        }
+
+        function swapBottomToTop() {
+            const allCards = stack.querySelectorAll('.card');
+            if(allCards.length === 0) return;
+            
+            const bottomCard = allCards[0]; 
+            const dataIndex = bottomCard.dataset.id;
+            const data = cardsData[dataIndex];
+
+            isAnimating = true;
+            
+            const randomRot = (Math.random() * 6) - 3; 
+            bottomCard.style.setProperty('--start-rot', '0deg'); 
+            bottomCard.style.setProperty('--end-rot', randomRot + 'deg');
+
+            bottomCard.classList.add('animating');
+            
+            setTimeout(() => {
+                updateInfoDisplay(data);
+                cardsSeen++; 
+            }, 300);
+
+            setTimeout(() => {
+                bottomCard.classList.remove('animating');
+                bottomCard.style.transform = `rotate(${randomRot}deg) translate(0,0)`; 
+                
+                const hintEl = stack.querySelector('.hint') || stack.querySelector('.swipe-hint');
+                if (hintEl) stack.insertBefore(bottomCard, hintEl);
+                else stack.appendChild(bottomCard);
+                
+                isAnimating = false;
+            }, 600); 
+        }
+
+        function enterGalleryMode() {
+            isGalleryMode = true;
+            stage.classList.add('gallery-mode');
+            stage.classList.add('scattering'); 
+
+            cardElements = Array.from(document.querySelectorAll('.card'));
+            activeIndex = cardElements.length - 1; 
+
+            updateCarousel3D();
+            initSwipeListeners();
+            
+            stack.addEventListener('mousemove', handleCardTilt);
+            stack.addEventListener('mouseleave', resetCardTilt);
+
+            setTimeout(() => { stage.classList.remove('scattering'); }, 1500);
+        }
+
+        function updateCarousel3D() {
+            const count = cardElements.length;
+            cardElements.forEach((card, i) => {
+                let offset = (i - activeIndex) % count;
+                if (offset < 0) offset += count;
+                if (offset > count / 2) offset -= count;
+
+                const isMobile = window.innerWidth < 600;
+                const dist = isMobile ? 80 : 220;
+
+                const translateX = offset * dist; 
+                // Efek kedalaman Z agar tidak clipping
+                const translateZ = -Math.abs(offset) * 80; 
+
+                const scale = offset === 0 ? 1.1 : 0.85; 
+                const opacity = Math.abs(offset) > 2 ? 0 : 1; 
+                const zIndex = 100 - Math.abs(offset);
+                const rotateY = offset * -15; 
+
+                if (offset !== 0) {
+                    card.style.transform = `translateX(${translateX}px) translateZ(${translateZ}px) scale(${scale}) perspective(1000px) rotateY(${rotateY}deg)`;
+                    card.classList.remove('active-tilt');
+                } else {
+                    card.style.transform = `translateX(${translateX}px) translateZ(0px) scale(${scale}) perspective(1000px) rotateY(0deg)`;
+                    card.classList.add('active-tilt');
+                    
+                    const data = cardsData[card.dataset.id];
+                    card.style.borderColor = "#fff";
+                    updateInfoDisplay(data);
+                    updateAmbientColor(data.color);
+                }
+
+                card.style.zIndex = zIndex;
+                card.style.opacity = opacity;
+
+                if (offset !== 0) card.style.borderColor = '#444';
+            });
+        }
+
+        function handleCardTilt(e) {
+            if (!isGalleryMode) return;
+            const activeCard = document.querySelector('.card.active-tilt');
+            if (!activeCard) return;
+
+            const rect = activeCard.getBoundingClientRect();
+            const x = e.clientX - rect.left; 
+            const y = e.clientY - rect.top;
+            
+            const w = rect.width;
+            const h = rect.height;
+
+            const rotateX = ((y - h/2) / h) * -20; 
+            const rotateY = ((x - w/2) / w) * 20;
+
+            activeCard.style.transform = `translateX(0px) scale(1.1) perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        }
+
+        function resetCardTilt() {
+            if (!isGalleryMode) return;
+            const activeCard = document.querySelector('.card.active-tilt');
+            if (!activeCard) return;
+            activeCard.style.transform = `translateX(0px) scale(1.1) perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+        }
+
+        function initSwipeListeners() {
+            const container = document.querySelector('.card-stack-container');
+            container.addEventListener('touchstart', handleDragStart, {passive: false});
+            container.addEventListener('touchmove', handleDragMove, {passive: false});
+            container.addEventListener('touchend', handleDragEnd);
+            container.addEventListener('mousedown', handleDragStart);
+            window.addEventListener('mousemove', handleDragMove);
+            window.addEventListener('mouseup', handleDragEnd);
+        }
+
+        let isDragging = false;
+        let dragStartX = 0;
+
+        function handleDragStart(e) {
+            if (!isGalleryMode) return;
+            isDragging = true;
+            dragStartX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+        }
+        function handleDragMove(e) { if (!isDragging || !isGalleryMode) return; }
+        function handleDragEnd(e) {
+            if (!isDragging || !isGalleryMode) return;
+            isDragging = false;
+            const endX = e.type.includes('touch') ? e.changedTouches[0].clientX : e.clientX;
+            const diff = endX - dragStartX;
+            
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) activeIndex--; else activeIndex++;
+                if (activeIndex < 0) activeIndex = cardElements.length - 1;
+                if (activeIndex >= cardElements.length) activeIndex = 0;
+                updateCarousel3D();
+            }
+        }
+
+        function updateInfoDisplay(data) {
+            if (!data) return;
+            
+            const panel = document.getElementById('infoPanel');
+            panel.style.opacity = isGalleryMode ? 0.8 : 0.5;
+
+            setTimeout(() => {
+                infoTitle.innerText = data.title;
+                infoDesc.innerText = data.desc;
+                infoAtk.innerText = data.atk;
+                infoDef.innerText = data.def;
+                infoTitle.style.color = data.color;
+                
+                if(data.rarity) {
+                    rarityBadge.style.display = 'flex';
+                    rarityBadge.innerText = data.rarity;
+                    rarityBadge.style.backgroundColor = data.color;
+                    rarityBadge.style.color = '#fff'; // Default text color
+                    
+                    // Warna-warna cerah membutuhkan teks hitam agar terbaca
+                    // Biru Cyan, Emas/Kuning, Hijau Neon
+                    const lightColors = ['#00d2d3', '#ffd700', '#00e170']; 
+                    if (lightColors.includes(data.color)) {
+                        rarityBadge.style.color = '#000';
+                    }
+                }
+
+                panel.style.opacity = 1;
+            }, 100);
+        }
+
+        function updateAmbientColor(color) {
+            if(color) document.documentElement.style.setProperty('--dynamic-bg', color);
+        }
+
+    </script>
+</body>
+</html>
