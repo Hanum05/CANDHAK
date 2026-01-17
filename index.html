@@ -792,6 +792,24 @@
             if(color) document.documentElement.style.setProperty('--dynamic-bg', color);
         }
 
+        // 8. KONTROL KEYBOARD (Fitur Baru)
+        window.addEventListener('keydown', (e) => {
+            // Hanya aktif jika sudah masuk mode galeri
+            if (!isGalleryMode) return;
+
+            if (e.key === 'ArrowRight') {
+                // Geser ke kanan (Next)
+                activeIndex++;
+                if (activeIndex >= cardElements.length) activeIndex = 0;
+                updateCarousel3D();
+            } else if (e.key === 'ArrowLeft') {
+                // Geser ke kiri (Prev)
+                activeIndex--;
+                if (activeIndex < 0) activeIndex = cardElements.length - 1;
+                updateCarousel3D();
+            }
+        });
+
     </script>
 </body>
 </html>
