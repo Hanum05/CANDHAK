@@ -12,40 +12,80 @@
             --accent-color: #ff4757;
             
             /* UKURAN DEFAULT (DESKTOP) - Dikurangi 10% */
-            /* 240px -> 216px, 360px -> 324px */
             --card-width: 216px; 
             --card-height: 324px;
             
             --dynamic-bg: #121212;
         }
 
+        /* TOMBOL SHORTCUT GALERI (BARU) */
+        .gallery-shortcut {
+            position: fixed; /* Fixed agar tetap di pojok meskipun scroll */
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            
+            /* TAMBAHAN: Transparansi 25% saat diam */
+            opacity: 0.25; 
+        }
+
+        .gallery-shortcut:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--accent-color);
+            border-color: var(--accent-color);
+            
+            /* TAMBAHAN: Kembali terlihat jelas saat hover */
+            opacity: 1;
+        }
+
+        /* CSS untuk menyembunyikan tombol di mode galeri DIHAPUS agar tombol tetap ada */
+
+        /* Tooltip sederhana */
+        .gallery-shortcut::after {
+            content: attr(data-tooltip); /* Ambil teks dari atribut data-tooltip */
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            background: rgba(0,0,0,0.8);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .gallery-shortcut:hover::after {
+            opacity: 1;
+        }
+
         /* EFEK TEKS WARNA-WARNI (Sesuai Urutan Kelompok Kartu) */
         .rainbow-text {
-            /* Urutan warna: Merah -> Biru -> Ungu -> Hitam -> Orange -> Hijau -> Kuning */
             background: linear-gradient(to right, 
-                #ff4757, /* Merah (Serangan Verbal) */
-                #00d2d3, /* Biru (Identitas) */
-                #9c27b0, /* Ungu (Manipulasi) */
-                #57606f, /* Hitam/Abu (Pengucilan) */
-                #ff9f43, /* Orange (Provokasi) */
-                #00e170, /* Hijau (Action) */
-                #ffd700  /* Kuning (Wisdom) */
+                #ff4757, #00d2d3, #9c27b0, #57606f, #ff9f43, #00e170, #ffd700
             );
             background-size: 100% auto;
-            
-            color: #fff; /* Fallback */
+            color: #fff; 
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            
             font-weight: 800; 
             display: inline-block;
-        }
-
-        @keyframes rainbowMove {
-            to {
-                background-position: 200% center;
-            }
         }
 
         /* Responsive Variables untuk HP */
@@ -58,6 +98,10 @@
             
             .card-icon { font-size: 1.8rem !important; margin-bottom: 5px !important; }
             .card-name-preview { font-size: 0.7rem !important; letter-spacing: 0.5px !important; }
+            
+            /* Sesuaikan posisi tombol di HP agar tidak terlalu mepet */
+            .gallery-shortcut { top: 15px; right: 15px; width: 40px; height: 40px; }
+            .gallery-shortcut svg { width: 20px; height: 20px; }
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -103,14 +147,9 @@
         /* WELCOME MESSAGE */
         .welcome-message {
             position: absolute;
-            
-            /* POSISI BARU: Relatif terhadap tengah layar */
             top: 50%; 
-            bottom: auto; /* Reset bottom */
-            
-            /* Geser ke bawah: Setengah tinggi kartu + Jarak aman (30px) */
+            bottom: auto; 
             margin-top: calc(var(--card-height) * 0.5 + 30px);
-            
             width: 100%;
             text-align: center;
             z-index: 5;
@@ -121,17 +160,18 @@
         }
 
         .welcome-message h2 {
-            /* Font size dikurangi ~10% untuk desktop */
             font-size: clamp(2.2rem, 5.5vw, 3.6rem); 
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 5px; 
-            font-weight: 900; /* Extra Bold */
-
-            /* TAMBAHAN: Outline Hitam Tebal & Bayangan Tebal */
-            -webkit-text-stroke: 2.5px black; /* Garis tepi hitam tebal */
-            paint-order: stroke fill; /* Pastikan garis tepi di belakang warna isi */
-            text-shadow: 6px 6px 0px rgba(0,0,0,0.8); /* Bayangan solid tebal */
+            font-weight: 900; 
+            
+            /* Outline Hitam Tetap Tebal, tapi Bayangan jadi Transparan */
+            -webkit-text-stroke: 2.5px black; 
+            paint-order: stroke fill; 
+            
+            /* Mengubah opacity bayangan dari 0.8 jadi 0.25 (Transparan) */
+            text-shadow: 6px 6px 0px rgba(0,0,0,0.25); 
         }
 
         .welcome-message p {
@@ -171,7 +211,6 @@
             transform-style: preserve-3d; 
         }
 
-        /* DESKTOP DEFAULT: Geser ke kiri saat aktif */
         .stage.active .card-stack-container {
             left: 25%; 
             transform: translate(-25%, -50%); 
@@ -196,7 +235,11 @@
             left: 50%; top: 50%;
             margin-left: calc(var(--card-width) * -0.5);
             margin-top: calc(var(--card-height) * -0.5);
-            background: #1e1e1e; /* Warna dasar placeholder */
+            
+            /* BACKGROUND KARTU JADI TRANSPARAN */
+            background: rgba(30, 30, 30, 0.85); /* Semi-transparan */
+            backdrop-filter: blur(8px); /* Efek kaca buram */
+            
             border: 2px solid #555;
             border-radius: 10px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -211,39 +254,32 @@
         /* STYLE KHUSUS UNTUK GAMBAR/PLACEHOLDER */
         .card-file-content {
             position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            background: transparent; /* Ubah jadi transparent agar efek kartu terlihat */
+        }
+
+        .card-file-content {
+            position: relative;
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
             background: #222;
         }
 
-        /* Text nama file (Placeholder) */
         .filename-label {
             position: absolute;
-            font-family: monospace;
-            color: #888;
-            font-size: 0.9rem;
-            text-align: center;
-            padding: 10px;
-            border: 2px dashed #444;
-            border-radius: 8px;
+            font-family: monospace; color: #888; font-size: 0.9rem;
+            text-align: center; padding: 10px;
+            border: 2px dashed #444; border-radius: 8px;
             background: rgba(0,0,0,0.5);
-            z-index: 1;
-            pointer-events: none;
+            z-index: 1; pointer-events: none;
         }
 
-        /* Gambar Asli (Akan menutupi text jika file ada) */
         .card-real-img {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            z-index: 2;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; object-fit: cover; z-index: 2;
         }
 
-        /* Efek Shine tetap ada di atas gambar */
         .card::after {
             content: "";
             position: absolute;
@@ -252,7 +288,7 @@
             transform: translateX(-100%);
             transition: transform 0.5s;
             pointer-events: none;
-            z-index: 5; /* Di atas gambar */
+            z-index: 5;
         }
         .card:hover::after {
             transform: translateX(100%);
@@ -273,21 +309,12 @@
             transition: transform 1.5s cubic-bezier(0.2, 0.9, 0.1, 1);
         }
 
-        .card-content { 
-            text-align: center; padding: 10px; pointer-events: none; 
-            transform: translateZ(20px); 
-        }
-        /* Icon size dikurangi 10% (3rem -> 2.7rem) */
-        .card-icon { font-size: 2.7rem; margin-bottom: 10px; display: block; }
-        .card-name-preview { font-size: 1rem; font-weight: bold; color: #ccc; letter-spacing: 1px; }
-
         #coverCard { 
             transform: rotate(0deg) translate(0,0); 
-            z-index: 100; 
-            border-color: #fff;
+            z-index: 100; border-color: #fff;
         }
 
-        /* INFO PANEL - DESKTOP DEFAULT */
+        /* INFO PANEL */
         .info-panel {
             position: absolute;
             right: 5%; top: 50%;
@@ -299,22 +326,17 @@
         }
 
         .stage.active:not(.gallery-mode) .info-panel {
-            opacity: 1;
-            transform: translateY(-50%) translateX(0);
-            pointer-events: auto;
+            opacity: 1; transform: translateY(-50%) translateX(0); pointer-events: auto;
         }
 
-        /* Shared style for Gallery Mode & Mobile View */
         .stage.gallery-mode .info-panel {
             right: auto; top: auto; left: 0; bottom: 5%;
             width: 100%; height: auto;
-            transform: translateY(0);
-            opacity: 1;
+            transform: translateY(0); opacity: 1;
             align-items: center; text-align: center; padding: 0 20px;
         }
 
         .info-title {
-            /* Font size dikurangi 10% */
             font-size: clamp(1.6rem, 4.5vw, 3.2rem);
             font-weight: 700; text-transform: uppercase;
             margin-bottom: 10px; color: var(--accent-color);
@@ -363,7 +385,6 @@
         /* MEDIA QUERIES KHUSUS MOBILE (Layout Fix)             */
         /* ---------------------------------------------------- */
         @media (max-width: 768px) {
-            /* 1. Posisi Kartu (35% dari atas) */
             .stage.active .card-stack-container,
             .stage.gallery-mode .card-stack-container {
                 left: 50% !important;
@@ -371,41 +392,38 @@
                 transform: translate(-50%, -50%) !important;
             }
 
-            /* 2. Info Panel (Menempel tepat di bawah kartu) */
             .info-panel {
                 right: auto; left: 0; 
                 width: 100%;
-                /* Rumus posisi start: 35% + 0.55 tinggi kartu + margin */
                 top: calc(35% + (var(--card-height) * 0.55) + 20px);
                 bottom: 0; 
                 height: auto;
                 padding: 10px 20px;
                 justify-content: flex-start; 
-                align-items: center;
-                text-align: center;
-                transform: none !important; 
-                opacity: 0; 
+                align-items: center; text-align: center;
+                transform: none !important; opacity: 0; 
             }
 
             .stage.active:not(.gallery-mode) .info-panel,
             .stage.gallery-mode .info-panel {
-                opacity: 1;
-                pointer-events: auto;
+                opacity: 1; pointer-events: auto;
             }
             
             .info-title { margin-bottom: 5px; font-size: 1.8rem; }
             .info-desc { 
-                font-size: 0.9rem; 
-                line-height: 1.3;
-                max-width: 100%;
-                max-height: 25vh; 
-                overflow-y: auto; 
+                font-size: 0.9rem; line-height: 1.3;
+                max-width: 100%; max-height: 25vh; overflow-y: auto; 
             }
         }
     </style>
 </head>
 <body>
     <div class="ambient-background" id="ambientBg"></div>
+
+    <!-- TOMBOL SHORTCUT GALERI / HOME -->
+    <button class="gallery-shortcut" id="mainButton" onclick="handleShortcutClick()" data-tooltip="Langsung ke Mode Galeri">
+        <!-- Icon akan diisi oleh JS -->
+    </button>
 
     <div class="stage" id="stage">
         
@@ -421,7 +439,7 @@
                 <span style="color: #ffd700">K</span><!-- Kuning -->
             </h2>
             
-            <!-- Sub-judul Panjang (Deskripsi) dengan WARNA ABU-ABU MUDA (#d1d5db) -->
+            <!-- Sub-judul Panjang -->
             <p style="
                 font-family: 'Poppins', sans-serif;
                 font-weight: 600; 
@@ -435,7 +453,7 @@
                 Media Kartu Berbasis Gamifikasi untuk Mitigasi Cyberbullying<br class="hidden-mobile"> dan Literasi Digital Generasi Alpha
             </p>
             
-            <!-- Instruksi (Dikembalikan) -->
+            <!-- Instruksi -->
             <p style="font-size: clamp(0.7rem, 2vw, 0.9rem); color: #aaa; font-weight: 300;">
                 (Klik tumpukan untuk mempelajari kartu)
             </p>
@@ -446,7 +464,6 @@
             <div class="card" id="coverCard">
                 <div class="card-file-content">
                     <div class="filename-label">Cover.png</div>
-                    <!-- Gambar akan muncul jika file Cover.png ada -->
                     <img src="Cover.png" class="card-real-img" onerror="this.style.opacity='0'">
                 </div>
             </div>
@@ -466,14 +483,6 @@
 
     <script>
         // --- DATA KARTU EDUKASI (45 Kartu) ---
-        // Kelompok 1: Merah (#ff4757) - Serangan Verbal
-        // Kelompok 2: Biru Cyan (#00d2d3) - Identitas & Privasi
-        // Kelompok 3: Ungu (#9c27b0) - Manipulasi Konten
-        // Kelompok 4: Abu-abu Gelap (#57606f) - Pengucilan Sosial
-        // Kelompok 5: Oranye (#ff9f43) - Provokasi
-        // Kelompok 6: Hijau Neon (#00e170) - Action Cards
-        // Kelompok 7: Emas (#ffd700) - Wisdom Cards
-        
         const cardsData = [
             // KELOMPOK 1: SERANGAN VERBAL
             { id: 1, title: "Flaming", color: "#ff4757", atk: "Tinggi", def: "Medium", rarity: "Agresi Verbal", desc: "Mengirim pesan penuh amarah dan makian di kolom komentar atau chat untuk memancing keributan." },
@@ -538,6 +547,7 @@
         const stage = document.getElementById('stage');
         const stack = document.getElementById('stack');
         const ambientBg = document.getElementById('ambientBg');
+        const mainButton = document.getElementById('mainButton');
         
         // Elemen Info
         const infoTitle = document.getElementById('infoTitle');
@@ -545,6 +555,10 @@
         const infoAtk = document.getElementById('infoAtk'); // Impact
         const infoDef = document.getElementById('infoDef'); // Risk
         const rarityBadge = document.getElementById('rarityBadge');
+
+        // SVG ICONS
+        const iconGallery = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
+        const iconHome = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>`;
 
         let isStarted = false;
         let isAnimating = false;
@@ -573,9 +587,17 @@
                 `;
                 
                 const cover = document.getElementById('coverCard');
-                stack.insertBefore(card, cover);
+                // Ensure cover exists before trying to insert before it
+                if (cover && cover.parentNode === stack) {
+                    stack.insertBefore(card, cover);
+                } else {
+                    stack.appendChild(card);
+                }
             });
         }
+        
+        // Set icon awal
+        mainButton.innerHTML = iconGallery;
         initCards();
 
         stack.addEventListener('click', handleStackClick);
@@ -602,13 +624,25 @@
             stage.classList.add('active'); 
 
             const cover = document.getElementById('coverCard');
-            cover.style.transform = "translateY(-100vh) rotate(20deg)";
-            cover.style.opacity = "0";
-            setTimeout(() => cover.remove(), 500);
+            if (cover) {
+                // ANIMASI BARU: FLIP KE KANAN
+                // Kita beri transisi yang smooth
+                cover.style.transition = "transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.6s ease-in";
+                
+                // rotateY(180deg): Membalik kartu seperti membuka halaman buku/kartu
+                // translateX(50%): Sedikit geser ke kanan agar tidak menutupi kartu di bawahnya saat memudar
+                cover.style.transform = "perspective(1000px) rotateY(180deg) translateX(50%)";
+                
+                // Hilangkan opacity agar transisi ke kartu berikutnya mulus
+                cover.style.opacity = "0";
+                
+                setTimeout(() => cover.remove(), 800);
+            }
 
+            // Buka kartu pertama sedikit lebih cepat setelah flip dimulai
             setTimeout(() => {
                 swapBottomToTop();
-            }, 600);
+            }, 500);
         }
 
         function swapBottomToTop() {
@@ -647,6 +681,10 @@
             isGalleryMode = true;
             stage.classList.add('gallery-mode');
             stage.classList.add('scattering'); 
+            
+            // Ubah tombol jadi Home
+            mainButton.innerHTML = iconHome;
+            mainButton.setAttribute('data-tooltip', 'Kembali ke Beranda');
 
             cardElements = Array.from(document.querySelectorAll('.card'));
             activeIndex = cardElements.length - 1; 
@@ -658,6 +696,65 @@
             stack.addEventListener('mouseleave', resetCardTilt);
 
             setTimeout(() => { stage.classList.remove('scattering'); }, 1500);
+        }
+
+        // FUNGSI RESET KE HOME
+        function resetToHome() {
+            isStarted = false;
+            isGalleryMode = false;
+            isAnimating = false;
+            cardsSeen = 0;
+            activeIndex = 0;
+
+            // Reset UI Classes
+            stage.classList.remove('active', 'gallery-mode', 'scattering');
+            ambientBg.classList.remove('active');
+            
+            // Reset Button Icon
+            mainButton.innerHTML = iconGallery;
+            mainButton.setAttribute('data-tooltip', 'Langsung ke Mode Galeri');
+
+            // Reset Info Panel
+            document.getElementById('infoPanel').style.opacity = 0;
+
+            // Re-build Stack
+            stack.innerHTML = '';
+            
+            // Create Cover
+            const cover = document.createElement('div');
+            cover.className = 'card';
+            cover.id = 'coverCard';
+            cover.innerHTML = `
+                <div class="card-file-content">
+                    <div class="filename-label">Cover.png</div>
+                    <img src="Cover.png" class="card-real-img" onerror="this.style.opacity='0'">
+                </div>
+            `;
+            stack.appendChild(cover);
+
+            // Re-init cards
+            initCards();
+            
+            // Reset background color
+            document.documentElement.style.setProperty('--dynamic-bg', '#121212');
+        }
+
+        // FUNGSI SHORTCUT (BUTTON)
+        function handleShortcutClick() {
+            if (isGalleryMode) {
+                // Jika sedang di galeri, tombol ini berfungsi sebagai Home
+                resetToHome();
+            } else {
+                // Jika di home/intro, tombol ini berfungsi masuk Galeri
+                if (!isStarted) {
+                    isStarted = true;
+                    ambientBg.classList.add('active');
+                    stage.classList.add('active');
+                    const cover = document.getElementById('coverCard');
+                    if(cover) cover.remove();
+                }
+                enterGalleryMode();
+            }
         }
 
         function updateCarousel3D() {
