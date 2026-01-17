@@ -18,28 +18,6 @@
             --dynamic-bg: #121212;
         }
 
-        /* EFEK TEKS MENGKILAP (SHINY) */
-        @keyframes shine {
-            to {
-                background-position: 200% center;
-            }
-        }
-
-        .shiny-red {
-            /* Gradient merah gelap -> merah terang -> putih (kilap) -> merah terang -> merah gelap */
-            background: linear-gradient(to right, #c0392b 0%, #ff4757 30%, #ffffff 50%, #ff4757 70%, #c0392b 100%);
-            background-size: 200% auto;
-            
-            color: #ff4757; /* Fallback color */
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            
-            animation: shine 3s linear infinite;
-            font-weight: 800; /* Extra bold agar efek terlihat jelas */
-            display: inline-block;
-        }
-
         /* Responsive Variables untuk HP */
         @media (max-width: 768px) {
             :root {
@@ -113,11 +91,16 @@
         }
 
         .welcome-message h2 {
-            font-size: clamp(2rem, 5vw, 3rem);
-            margin-bottom: 5px;
+            font-size: clamp(2.5rem, 6vw, 4rem); /* Sedikit diperbesar */
+            margin-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+            letter-spacing: 5px; 
+            font-weight: 900; /* Extra Bold */
+
+            /* TAMBAHAN: Outline Hitam Tebal & Bayangan Tebal */
+            -webkit-text-stroke: 2.5px black; /* Garis tepi hitam tebal */
+            paint-order: stroke fill; /* Pastikan garis tepi di belakang warna isi */
+            text-shadow: 6px 6px 0px rgba(0,0,0,0.8); /* Bayangan solid tebal */
         }
 
         .welcome-message p {
@@ -387,15 +370,23 @@
     <div class="stage" id="stage">
         
         <div class="welcome-message">
-            <!-- Judul Utama: SHINY RED EFFECT -->
-            <h2 class="shiny-red">CANDHAK</h2>
+            <!-- Judul Utama: WARNA PER HURUF -->
+            <h2>
+                <span style="color: #ff4757">C</span><!-- Merah -->
+                <span style="color: #00d2d3">A</span><!-- Biru Cyan -->
+                <span style="color: #9c27b0">N</span><!-- Ungu -->
+                <span style="color: #57606f">D</span><!-- Hitam/Abu -->
+                <span style="color: #ff9f43">H</span><!-- Orange -->
+                <span style="color: #00e170">A</span><!-- Hijau -->
+                <span style="color: #ffd700">K</span><!-- Kuning -->
+            </h2>
             
-            <!-- Sub-judul Panjang (Deskripsi) dengan WARNA MERAH -->
+            <!-- Sub-judul Panjang (Deskripsi) dengan WARNA ABU-ABU MUDA (#d1d5db) -->
             <p style="
                 font-family: 'Poppins', sans-serif;
                 font-weight: 600; 
                 font-size: clamp(0.7rem, 2vw, 1.1rem); 
-                color: var(--accent-color); 
+                color: #d1d5db; /* ABU-ABU MUDA (OFF-WHITE) */
                 max-width: 90%; 
                 margin: 0 auto 15px auto; 
                 line-height: 1.4;
