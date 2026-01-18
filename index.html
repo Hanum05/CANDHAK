@@ -18,27 +18,21 @@
             --dynamic-bg: #121212;
         }
 
-        /* TOMBOL SHORTCUT GALERI (BARU) */
+        /* TOMBOL SHORTCUT GALERI (KANAN ATAS) */
         .gallery-shortcut {
-            position: fixed; /* Fixed agar tetap di pojok meskipun scroll */
-            top: 20px;
-            right: 20px;
+            position: fixed; 
+            top: 20px; right: 20px;
             z-index: 1000;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            
-            /* TAMBAHAN: Transparansi 25% saat diam */
             opacity: 0.25; 
         }
 
@@ -47,19 +41,43 @@
             transform: scale(1.1);
             box-shadow: 0 0 15px var(--accent-color);
             border-color: var(--accent-color);
-            
-            /* TAMBAHAN: Kembali terlihat jelas saat hover */
             opacity: 1;
         }
 
-        /* CSS untuk menyembunyikan tombol di mode galeri DIHAPUS agar tombol tetap ada */
+        /* TOMBOL MUSIK (KIRI ATAS) - BARU */
+        .music-toggle {
+            position: fixed; 
+            top: 20px; left: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            opacity: 0.25; 
+        }
+
+        .music-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+            opacity: 1;
+        }
+        
+        .music-toggle.playing {
+            border-color: #00e170;
+            box-shadow: 0 0 10px rgba(0, 225, 112, 0.3);
+        }
 
         /* Tooltip sederhana */
-        .gallery-shortcut::after {
-            content: attr(data-tooltip); /* Ambil teks dari atribut data-tooltip */
+        .gallery-shortcut::after, .music-toggle::after {
+            content: attr(data-tooltip); 
             position: absolute;
-            bottom: -30px;
-            left: 50%;
+            bottom: -30px; left: 50%;
             transform: translateX(-50%);
             font-size: 0.7rem;
             white-space: nowrap;
@@ -67,14 +85,11 @@
             transition: opacity 0.3s;
             pointer-events: none;
             background: rgba(0,0,0,0.8);
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 4px 8px; border-radius: 4px;
         }
-        .gallery-shortcut:hover::after {
-            opacity: 1;
-        }
+        .gallery-shortcut:hover::after, .music-toggle:hover::after { opacity: 1; }
 
-        /* EFEK TEKS WARNA-WARNI (Sesuai Urutan Kelompok Kartu) */
+        /* EFEK TEKS WARNA-WARNI */
         .rainbow-text {
             background: linear-gradient(to right, 
                 #ff4757, #00d2d3, #9c27b0, #57606f, #ff9f43, #00e170, #ffd700
@@ -99,9 +114,11 @@
             .card-icon { font-size: 1.8rem !important; margin-bottom: 5px !important; }
             .card-name-preview { font-size: 0.7rem !important; letter-spacing: 0.5px !important; }
             
-            /* Sesuaikan posisi tombol di HP agar tidak terlalu mepet */
             .gallery-shortcut { top: 15px; right: 15px; width: 40px; height: 40px; }
             .gallery-shortcut svg { width: 20px; height: 20px; }
+            
+            .music-toggle { top: 15px; left: 15px; width: 40px; height: 40px; }
+            .music-toggle svg { width: 20px; height: 20px; }
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -147,12 +164,9 @@
         /* WELCOME MESSAGE */
         .welcome-message {
             position: absolute;
-            top: 50%; 
-            bottom: auto; 
+            top: 50%; bottom: auto; 
             margin-top: calc(var(--card-height) * 0.5 + 30px);
-            width: 100%;
-            text-align: center;
-            z-index: 5;
+            width: 100%; text-align: center; z-index: 5;
             pointer-events: none; 
             opacity: 0;
             transform: translateY(20px);
@@ -165,12 +179,8 @@
             text-transform: uppercase;
             letter-spacing: 5px; 
             font-weight: 900; 
-            
-            /* Outline Hitam Tetap Tebal, tapi Bayangan jadi Transparan */
             -webkit-text-stroke: 2.5px black; 
             paint-order: stroke fill; 
-            
-            /* Mengubah opacity bayangan dari 0.8 jadi 0.25 (Transparan) */
             text-shadow: 6px 6px 0px rgba(0,0,0,0.25); 
         }
 
@@ -236,9 +246,8 @@
             margin-left: calc(var(--card-width) * -0.5);
             margin-top: calc(var(--card-height) * -0.5);
             
-            /* BACKGROUND KARTU JADI TRANSPARAN */
-            background: rgba(30, 30, 30, 0.85); /* Semi-transparan */
-            backdrop-filter: blur(8px); /* Efek kaca buram */
+            background: rgba(30, 30, 30, 0.85); 
+            backdrop-filter: blur(8px); 
             
             border: 2px solid #555;
             border-radius: 10px; 
@@ -249,14 +258,6 @@
             transform-style: preserve-3d;
             backface-visibility: hidden;
             overflow: hidden; 
-        }
-
-        /* STYLE KHUSUS UNTUK GAMBAR/PLACEHOLDER */
-        .card-file-content {
-            position: relative;
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            background: transparent; /* Ubah jadi transparent agar efek kartu terlihat */
         }
 
         .card-file-content {
@@ -420,7 +421,22 @@
 <body>
     <div class="ambient-background" id="ambientBg"></div>
 
-    <!-- TOMBOL SHORTCUT GALERI / HOME -->
+    <!-- AUDIO PLAYER -->
+    <!-- Loop: Agar musik berulang -->
+    <!-- Autoplay: Mencoba memutar otomatis -->
+    <audio id="bgMusic" loop autoplay>
+        <source src="backsound.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- TOMBOL MUSIK (KIRI ATAS) -->
+    <button class="music-toggle" id="musicBtn" onclick="toggleMusic()" data-tooltip="Matikan Musik">
+        <!-- Icon Sound On -->
+        <svg id="iconSoundOn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+        <!-- Icon Sound Off (Hidden) -->
+        <svg id="iconSoundOff" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+    </button>
+
+    <!-- TOMBOL SHORTCUT GALERI / HOME (KANAN ATAS) -->
     <button class="gallery-shortcut" id="mainButton" onclick="handleShortcutClick()" data-tooltip="Langsung ke Mode Galeri">
         <!-- Icon akan diisi oleh JS -->
     </button>
@@ -460,7 +476,7 @@
         </div>
 
         <div class="card-stack-container" id="stack">
-            <!-- Kartu Sampul: Menggunakan struktur baru dengan slot Cover.png -->
+            <!-- Kartu Sampul -->
             <div class="card" id="coverCard">
                 <div class="card-file-content">
                     <div class="filename-label">Cover.png</div>
@@ -548,6 +564,10 @@
         const stack = document.getElementById('stack');
         const ambientBg = document.getElementById('ambientBg');
         const mainButton = document.getElementById('mainButton');
+        const bgMusic = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicBtn');
+        const iconSoundOn = document.getElementById('iconSoundOn');
+        const iconSoundOff = document.getElementById('iconSoundOff');
         
         // Elemen Info
         const infoTitle = document.getElementById('infoTitle');
@@ -564,10 +584,64 @@
         let isAnimating = false;
         let isGalleryMode = false;
         let cardsSeen = 0;
+        let isMusicPlaying = true; // Default nyala
         
         // Carousel Logic
         let activeIndex = 0; 
         let cardElements = []; 
+
+        // LOGIKA AUDIO
+        // Coba putar otomatis saat load
+        window.addEventListener('load', () => {
+            bgMusic.volume = 0.5; // Set volume 50%
+            const playPromise = bgMusic.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // Autoplay started!
+                    updateMusicButtonUI();
+                }).catch(error => {
+                    // Autoplay was prevented.
+                    console.log("Autoplay dicegah oleh browser. Menunggu interaksi user.");
+                    isMusicPlaying = false;
+                    updateMusicButtonUI();
+                    
+                    // Putar saat interaksi pertama (klik di mana saja)
+                    document.body.addEventListener('click', () => {
+                        if (!isMusicPlaying && bgMusic.paused) {
+                            bgMusic.play();
+                            isMusicPlaying = true;
+                            updateMusicButtonUI();
+                        }
+                    }, { once: true });
+                });
+            }
+        });
+
+        function toggleMusic() {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                isMusicPlaying = true;
+            } else {
+                bgMusic.pause();
+                isMusicPlaying = false;
+            }
+            updateMusicButtonUI();
+        }
+
+        function updateMusicButtonUI() {
+            if (isMusicPlaying) {
+                iconSoundOn.style.display = 'block';
+                iconSoundOff.style.display = 'none';
+                musicBtn.classList.add('playing');
+                musicBtn.setAttribute('data-tooltip', 'Matikan Musik');
+            } else {
+                iconSoundOn.style.display = 'none';
+                iconSoundOff.style.display = 'block';
+                musicBtn.classList.remove('playing');
+                musicBtn.setAttribute('data-tooltip', 'Hidupkan Musik');
+            }
+        }
 
         function initCards() {
             // Render urutan terbalik untuk visual stack
