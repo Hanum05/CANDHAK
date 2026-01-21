@@ -44,37 +44,8 @@
             opacity: 1;
         }
 
-        /* TOMBOL MUSIK (KIRI ATAS) - BARU */
-        .music-toggle {
-            position: fixed; 
-            top: 20px; left: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            width: 50px; height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            opacity: 0.25; 
-        }
-
-        .music-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
-            opacity: 1;
-        }
-        
-        .music-toggle.playing {
-            border-color: #00e170;
-            box-shadow: 0 0 10px rgba(0, 225, 112, 0.3);
-        }
-
         /* Tooltip sederhana */
-        .gallery-shortcut::after, .music-toggle::after {
+        .gallery-shortcut::after {
             content: attr(data-tooltip); 
             position: absolute;
             bottom: -30px; left: 50%;
@@ -87,7 +58,7 @@
             background: rgba(0,0,0,0.8);
             padding: 4px 8px; border-radius: 4px;
         }
-        .gallery-shortcut:hover::after, .music-toggle:hover::after { opacity: 1; }
+        .gallery-shortcut:hover::after { opacity: 1; }
 
         /* EFEK TEKS WARNA-WARNI */
         .rainbow-text {
@@ -116,9 +87,6 @@
             
             .gallery-shortcut { top: 15px; right: 15px; width: 40px; height: 40px; }
             .gallery-shortcut svg { width: 20px; height: 20px; }
-            
-            .music-toggle { top: 15px; left: 15px; width: 40px; height: 40px; }
-            .music-toggle svg { width: 20px; height: 20px; }
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -421,21 +389,6 @@
 <body>
     <div class="ambient-background" id="ambientBg"></div>
 
-    <!-- AUDIO PLAYER -->
-    <!-- Loop: Agar musik berulang -->
-    <!-- Autoplay: Mencoba memutar otomatis -->
-    <audio id="bgMusic" loop autoplay>
-        <source src="backsound.mp3" type="audio/mpeg">
-    </audio>
-
-    <!-- TOMBOL MUSIK (KIRI ATAS) -->
-    <button class="music-toggle" id="musicBtn" onclick="toggleMusic()" data-tooltip="Matikan Musik">
-        <!-- Icon Sound On -->
-        <svg id="iconSoundOn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-        <!-- Icon Sound Off (Hidden) -->
-        <svg id="iconSoundOff" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
-    </button>
-
     <!-- TOMBOL SHORTCUT GALERI / HOME (KANAN ATAS) -->
     <button class="gallery-shortcut" id="mainButton" onclick="handleShortcutClick()" data-tooltip="Langsung ke Mode Galeri">
         <!-- Icon akan diisi oleh JS -->
@@ -476,7 +429,7 @@
         </div>
 
         <div class="card-stack-container" id="stack">
-            <!-- Kartu Sampul -->
+            <!-- Kartu Sampul: Menggunakan struktur baru dengan slot Cover.png -->
             <div class="card" id="coverCard">
                 <div class="card-file-content">
                     <div class="filename-label">Cover.png</div>
@@ -564,10 +517,6 @@
         const stack = document.getElementById('stack');
         const ambientBg = document.getElementById('ambientBg');
         const mainButton = document.getElementById('mainButton');
-        const bgMusic = document.getElementById('bgMusic');
-        const musicBtn = document.getElementById('musicBtn');
-        const iconSoundOn = document.getElementById('iconSoundOn');
-        const iconSoundOff = document.getElementById('iconSoundOff');
         
         // Elemen Info
         const infoTitle = document.getElementById('infoTitle');
@@ -584,64 +533,10 @@
         let isAnimating = false;
         let isGalleryMode = false;
         let cardsSeen = 0;
-        let isMusicPlaying = true; // Default nyala
         
         // Carousel Logic
         let activeIndex = 0; 
         let cardElements = []; 
-
-        // LOGIKA AUDIO
-        // Coba putar otomatis saat load
-        window.addEventListener('load', () => {
-            bgMusic.volume = 0.5; // Set volume 50%
-            const playPromise = bgMusic.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    // Autoplay started!
-                    updateMusicButtonUI();
-                }).catch(error => {
-                    // Autoplay was prevented.
-                    console.log("Autoplay dicegah oleh browser. Menunggu interaksi user.");
-                    isMusicPlaying = false;
-                    updateMusicButtonUI();
-                    
-                    // Putar saat interaksi pertama (klik di mana saja)
-                    document.body.addEventListener('click', () => {
-                        if (!isMusicPlaying && bgMusic.paused) {
-                            bgMusic.play();
-                            isMusicPlaying = true;
-                            updateMusicButtonUI();
-                        }
-                    }, { once: true });
-                });
-            }
-        });
-
-        function toggleMusic() {
-            if (bgMusic.paused) {
-                bgMusic.play();
-                isMusicPlaying = true;
-            } else {
-                bgMusic.pause();
-                isMusicPlaying = false;
-            }
-            updateMusicButtonUI();
-        }
-
-        function updateMusicButtonUI() {
-            if (isMusicPlaying) {
-                iconSoundOn.style.display = 'block';
-                iconSoundOff.style.display = 'none';
-                musicBtn.classList.add('playing');
-                musicBtn.setAttribute('data-tooltip', 'Matikan Musik');
-            } else {
-                iconSoundOn.style.display = 'none';
-                iconSoundOff.style.display = 'block';
-                musicBtn.classList.remove('playing');
-                musicBtn.setAttribute('data-tooltip', 'Hidupkan Musik');
-            }
-        }
 
         function initCards() {
             // Render urutan terbalik untuk visual stack
