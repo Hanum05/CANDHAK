@@ -13,11 +13,11 @@
             --accent-color: #ff4757;
             
             /* Warna Teks Tambahan */
-            --desc-color: #d1d5db; /* Abu muda */
+            --desc-color: #d1d5db;
             --hint-color: #aaa;
             
             /* Tombol */
-            --btn-bg: rgba(255, 255, 255, 0.1);
+            --btn-bg: rgba(30, 30, 30, 0.8); /* Ubah jadi solid semi-transparent */
             --btn-border: rgba(255, 255, 255, 0.2);
             --btn-icon: white;
             
@@ -28,61 +28,52 @@
             --dynamic-bg: #121212;
         }
 
-        /* --- CLASS TEMA TERANG (LIGHT MODE - PASTEL BLUE) --- */
-        /* Diaktifkan via JS dengan menambahkan class 'light-mode' ke body */
+        /* --- CLASS TEMA TERANG (LIGHT MODE) --- */
         body.light-mode {
-            --bg-color: #e3f2fd; /* Biru Pastel */
-            --text-color: #1f2937; /* Hitam Abu */
-            --accent-color: #ff4757; /* Tetap merah agar konsisten */
-            
-            --desc-color: #4b5563; /* Abu tua */
+            --bg-color: #e3f2fd;
+            --text-color: #1f2937;
+            --accent-color: #ff4757;
+            --desc-color: #4b5563;
             --hint-color: #6b7280;
-            
-            /* Penyesuaian Tombol agar terlihat di background terang */
-            --btn-bg: rgba(0, 0, 0, 0.05);
+            --btn-bg: rgba(255, 255, 255, 0.8);
             --btn-border: rgba(0, 0, 0, 0.1);
             --btn-icon: #374151;
-            
-            /* HAPUS --dynamic-bg DI SINI AGAR TIDAK MENIMPA WARNA KARTU SAAT JS BERJALAN */
         }
 
-        /* Override warna border stat di light mode */
         body.light-mode .stat {
             background: rgba(0,0,0,0.05);
             border: 1px solid rgba(0,0,0,0.1);
         }
 
-        /* SHARED BUTTON STYLE (Gallery & Theme) */
+        /* SHARED BUTTON STYLE */
         .icon-btn {
             position: fixed; 
             top: 20px;
             z-index: 1000;
             background: var(--btn-bg);
-            backdrop-filter: blur(10px);
+            /* OPTIMASI: Hapus backdrop-filter yang berat */
+            /* backdrop-filter: blur(10px); */ 
             border: 1px solid var(--btn-border);
             color: var(--btn-icon);
             width: 50px; height: 50px;
             border-radius: 50%;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: transform 0.2s ease, opacity 0.3s ease; /* Sederhanakan transisi */
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            opacity: 0.25; 
+            opacity: 0.5; /* Naikkan sedikit agar lebih visible tanpa hover */
         }
 
         .icon-btn:hover {
-            background: var(--btn-bg);
             transform: scale(1.1);
-            box-shadow: 0 0 15px var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
             border-color: var(--accent-color);
             opacity: 1;
         }
 
-        /* POSISI SPESIFIK TOMBOL */
         .gallery-shortcut { right: 20px; }
         .theme-toggle { left: 20px; }
 
-        /* Tooltip sederhana */
         .icon-btn::after {
             content: attr(data-tooltip); 
             position: absolute;
@@ -91,7 +82,7 @@
             font-size: 0.7rem;
             white-space: nowrap;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.2s;
             pointer-events: none;
             background: rgba(0,0,0,0.8);
             color: white;
@@ -105,7 +96,7 @@
                 #ff4757, #00d2d3, #9c27b0, #57606f, #ff9f43, #00e170, #ffd700
             );
             background-size: 100% auto;
-            color: var(--text-color); /* Fallback */
+            color: var(--text-color);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -116,15 +107,11 @@
         /* Responsive Variables untuk HP */
         @media (max-width: 768px) {
             :root {
-                /* UKURAN DIPERKECIL: 36vw */
                 --card-width: 36vw; 
                 --card-height: calc(36vw * 1.5);
             }
-            
             .card-icon { font-size: 1.8rem !important; margin-bottom: 5px !important; }
             .card-name-preview { font-size: 0.7rem !important; letter-spacing: 0.5px !important; }
-            
-            /* Sesuaikan posisi tombol di HP agar tidak terlalu mepet */
             .icon-btn { width: 40px; height: 40px; top: 15px; }
             .gallery-shortcut { right: 15px; }
             .theme-toggle { left: 15px; }
@@ -143,25 +130,22 @@
             align-items: center;
             justify-content: center;
             overscroll-behavior: none;
-            transition: background-color 0.5s ease, color 0.5s ease;
+            transition: background-color 0.3s ease, color 0.3s ease; /* Percepat transisi */
         }
 
-        /* BACKGROUND DINAMIS (Warna Kartu) */
         .ambient-background {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
             z-index: 0;
             background-color: var(--dynamic-bg);
-            /* Masking agar warnanya halus (vignette) */
             -webkit-mask-image: radial-gradient(circle at center, black 0%, transparent 80%);
             mask-image: radial-gradient(circle at center, black 0%, transparent 80%);
             opacity: 0; 
-            transition: background-color 1.2s ease, opacity 1s ease;
+            transition: background-color 0.8s ease, opacity 0.8s ease; /* Percepat transisi */
         }
         .ambient-background.active { opacity: 0.6; }
 
-        /* Container Utama */
         .stage {
             position: relative;
             width: 100%; height: 100vh; 
@@ -173,7 +157,6 @@
             justify-content: center;
         }
 
-        /* WELCOME MESSAGE */
         .welcome-message {
             position: absolute;
             top: 50%; bottom: auto; 
@@ -182,7 +165,7 @@
             pointer-events: none; 
             opacity: 0;
             transform: translateY(20px);
-            animation: welcomeFadeIn 1s ease-out 1.4s forwards;
+            animation: welcomeFadeIn 0.8s ease-out 1s forwards;
         }
 
         .welcome-message h2 {
@@ -198,7 +181,7 @@
 
         .welcome-message p {
             font-size: clamp(0.8rem, 2vw, 1rem);
-            color: var(--hint-color); /* Menggunakan Variabel */
+            color: var(--desc-color);
             font-weight: 300;
         }
 
@@ -209,10 +192,9 @@
         .stage.active .welcome-message {
             opacity: 0 !important;
             transform: translateY(100px) !important; 
-            transition: opacity 1.2s ease, transform 1.2s ease; 
+            transition: opacity 0.8s ease, transform 0.8s ease; 
         }
 
-        /* MODE TUMPUKAN (STACK) */
         @keyframes openingBounce {
             0% { opacity: 0; transform: translate(-50%, -50%) scale(1.8) rotate(-5deg); }
             60% { opacity: 1; transform: translate(-50%, -50%) scale(0.9) rotate(2deg); }
@@ -227,9 +209,9 @@
             z-index: 10;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
-            animation: openingBounce 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            animation: openingBounce 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
             opacity: 0; 
-            transition: left 1s cubic-bezier(0.25, 0.8, 0.25, 1), transform 1s cubic-bezier(0.25, 0.8, 0.25, 1), top 1s ease;
+            transition: left 0.8s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1), top 0.8s ease;
             transform-style: preserve-3d; 
         }
 
@@ -240,7 +222,6 @@
             opacity: 1;
         }
 
-        /* MODE GALERI (CAROUSEL) */
         .stage.gallery-mode .card-stack-container {
             left: 50% !important; 
             top: 40% !important; 
@@ -250,7 +231,7 @@
         }
         .stage.gallery-mode .card-stack-container:active { cursor: grabbing; }
 
-        /* VISUAL KARTU */
+        /* VISUAL KARTU - DIOPTIMALKAN */
         .card {
             position: absolute;
             width: var(--card-width); height: var(--card-height);
@@ -258,14 +239,19 @@
             margin-left: calc(var(--card-width) * -0.5);
             margin-top: calc(var(--card-height) * -0.5);
             
-            /* Background Kartu Tetap Gelap agar kontras dengan isinya */
-            background: #1e1e1e; 
+            /* OPTIMASI: Hapus Blur berat, ganti solid semi-transparan */
+            background: #2d2d2d; 
+            /* backdrop-filter: blur(8px);  <-- INI PENYEBAB LAG UTAMA */
             
             border: 2px solid #555;
             border-radius: 10px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            box-shadow: -5px 5px 15px rgba(0,0,0,0.5); 
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: -4px 4px 8px rgba(0,0,0,0.4); /* Kurangi radius shadow */
+            
+            /* OPTIMASI: Will Change untuk memberi tahu browser */
+            will-change: transform;
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); /* Transisi lebih cepat */
+            
             user-select: none;
             transform-style: preserve-3d;
             backface-visibility: hidden;
@@ -297,7 +283,7 @@
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(125deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.05) 60%, rgba(255,255,255,0) 100%);
+            background: linear-gradient(125deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 60%, rgba(255,255,255,0) 100%);
             transform: translateX(-100%);
             transition: transform 0.5s;
             pointer-events: none;
@@ -309,8 +295,8 @@
         }
 
         .stage.gallery-mode .card {
-            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s, box-shadow 0.3s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3); /* Shadow lebih ringan */
         }
         
         .stage.gallery-mode .card.active-tilt {
@@ -319,7 +305,7 @@
         }
 
         .stage.gallery-mode.scattering .card {
-            transition: transform 1.5s cubic-bezier(0.2, 0.9, 0.1, 1);
+            transition: transform 1s cubic-bezier(0.2, 0.9, 0.1, 1);
         }
 
         #coverCard { 
@@ -327,13 +313,12 @@
             z-index: 100; border-color: #fff;
         }
 
-        /* INFO PANEL */
         .info-panel {
             position: absolute;
             right: 5%; top: 50%;
             transform: translateY(-50%) translateX(30px);
             width: 45%; opacity: 0;
-            transition: all 0.8s ease;
+            transition: all 0.6s ease;
             pointer-events: none;
             display: flex; flex-direction: column; justify-content: center;
         }
@@ -354,14 +339,14 @@
             font-weight: 700; text-transform: uppercase;
             margin-bottom: 10px; color: var(--accent-color);
             line-height: 1; text-shadow: 0 0 20px rgba(0,0,0,0.5);
-            transition: color 1s ease; 
+            transition: color 0.5s ease; 
         }
         .stage.gallery-mode .info-title { font-size: clamp(1.5rem, 4vw, 2.5rem); margin-bottom: 5px; }
 
         .info-desc {
             font-size: clamp(0.75rem, 2.5vw, 1.2rem);
             line-height: 1.4; 
-            color: var(--desc-color); /* Menggunakan Variabel */
+            color: var(--desc-color); 
             margin-bottom: 20px; text-shadow: 0 0 10px rgba(0,0,0,0.1);
             max-width: 600px; 
         }
@@ -372,33 +357,32 @@
 
         .stats-box { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
         .stat {
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(5px);
+            background: rgba(255,255,255,0.1); 
+            /* Hapus backdrop filter di stat juga */
+            /* backdrop-filter: blur(5px); */
             padding: 8px 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
             font-size: clamp(0.7rem, 2vw, 1rem); white-space: nowrap;
             display: flex; align-items: center; gap: 5px;
-            color: var(--text-color); /* Menyesuaikan tema */
+            color: var(--text-color);
         }
 
-        /* ANIMASI TERBANG */
+        /* ANIMASI TERBANG (Disederhanakan) */
         @keyframes flyToTop {
             0% { transform: translateX(0) scale(1) rotate(var(--start-rot)); z-index: 0; opacity: 1; }
-            50% { transform: translateX(120%) translateY(-20%) scale(1.1) rotate(15deg); z-index: 200; opacity: 1; }
+            50% { transform: translateX(120%) translateY(-20%) scale(1.1) rotate(10deg); z-index: 200; opacity: 1; }
             100% { transform: translateX(0) scale(1) rotate(var(--end-rot)); z-index: 200; }
         }
         
         @media (max-width: 768px) {
             @keyframes flyToTop {
                 0% { transform: translate(0, 0) scale(1) rotate(var(--start-rot)); z-index: 0; opacity: 1; }
-                50% { transform: translate(0, -50%) scale(1.1) rotate(10deg); z-index: 200; opacity: 1; }
+                50% { transform: translate(0, -50%) scale(1.1) rotate(5deg); z-index: 200; opacity: 1; }
                 100% { transform: translate(0, 0) scale(1) rotate(var(--end-rot)); z-index: 200; }
             }
         }
 
-        .card.animating { animation: flyToTop 0.6s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); transition: none; }
+        .card.animating { animation: flyToTop 0.5s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); transition: none; }
 
-        /* ---------------------------------------------------- */
-        /* MEDIA QUERIES KHUSUS MOBILE (Layout Fix)             */
-        /* ---------------------------------------------------- */
         @media (max-width: 768px) {
             .stage.active .card-stack-container,
             .stage.gallery-mode .card-stack-container {
@@ -408,11 +392,9 @@
             }
 
             .info-panel {
-                right: auto; left: 0; 
-                width: 100%;
+                right: auto; left: 0; width: 100%;
                 top: calc(35% + (var(--card-height) * 0.55) + 20px);
-                bottom: 0; 
-                height: auto;
+                bottom: 0; height: auto;
                 padding: 10px 20px;
                 justify-content: flex-start; 
                 align-items: center; text-align: center;
@@ -437,9 +419,7 @@
 
     <!-- TOMBOL TEMA (KIRI ATAS) -->
     <button class="icon-btn theme-toggle" id="themeBtn" onclick="toggleTheme()" data-tooltip="Ubah Tema">
-        <!-- Icon Sun (Light Mode) - Default Hidden -->
         <svg id="iconSun" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        <!-- Icon Moon (Dark Mode) - Default Visible -->
         <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
     </button>
 
@@ -449,45 +429,23 @@
     </button>
 
     <div class="stage" id="stage">
-        
         <div class="welcome-message">
-            <!-- Judul Utama: WARNA PER HURUF -->
             <h2>
-                <span style="color: #ff4757">C</span><!-- Merah -->
-                <span style="color: #00d2d3">A</span><!-- Biru Cyan -->
-                <span style="color: #9c27b0">N</span><!-- Ungu -->
-                <span style="color: #57606f">D</span><!-- Hitam/Abu -->
-                <span style="color: #ff9f43">H</span><!-- Orange -->
-                <span style="color: #00e170">A</span><!-- Hijau -->
-                <span style="color: #ffd700">K</span><!-- Kuning -->
+                <span style="color: #ff4757">C</span><span style="color: #00d2d3">A</span><span style="color: #9c27b0">N</span><span style="color: #57606f">D</span><span style="color: #ff9f43">H</span><span style="color: #00e170">A</span><span style="color: #ffd700">K</span>
             </h2>
-            
-            <!-- Sub-judul Panjang -->
-            <p style="
-                font-family: 'Poppins', sans-serif;
-                font-weight: 600; 
-                font-size: clamp(0.7rem, 2vw, 1.1rem); 
-                color: var(--desc-color); 
-                max-width: 90%; 
-                margin: 0 auto 15px auto; 
-                line-height: 1.4;
-                text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-            ">
+            <p style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: clamp(0.7rem, 2vw, 1.1rem); color: var(--desc-color); max-width: 90%; margin: 0 auto 15px auto; line-height: 1.4; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
                 Media Kartu Berbasis Gamifikasi untuk Mitigasi Cyberbullying<br class="hidden-mobile"> dan Literasi Digital Generasi Alpha
             </p>
-            
-            <!-- Instruksi -->
             <p style="font-size: clamp(0.7rem, 2vw, 0.9rem); color: var(--hint-color); font-weight: 300;">
                 (Klik tumpukan untuk mempelajari kartu)
             </p>
         </div>
 
         <div class="card-stack-container" id="stack">
-            <!-- Kartu Sampul: Menggunakan struktur baru dengan slot Cover.png -->
             <div class="card" id="coverCard">
                 <div class="card-file-content">
                     <div class="filename-label">Cover.png</div>
-                    <img src="Cover.png" class="card-real-img" onerror="this.style.opacity='0'">
+                    <img src="Cover.png" class="card-real-img" onerror="this.style.opacity='0'" loading="eager">
                 </div>
             </div>
         </div>
@@ -496,7 +454,6 @@
             <h1 class="info-title" id="infoTitle">Cyber Safety</h1>
             <p class="info-desc" id="infoDesc">Memuat data kartu...</p>
             <div class="stats-box">
-                <!-- Statistik Edukasi -->
                 <div class="stat">💥 Dampak: <span id="infoAtk">-</span></div>
                 <div class="stat">⚠️ Resiko: <span id="infoDef">-</span></div>
                 <div class="stat" id="rarityBadge" style="display:none; background: #ffd700; color: black; font-weight:bold;">TIPE</div>
@@ -507,55 +464,42 @@
     <script>
         // --- DATA KARTU EDUKASI (45 Kartu) ---
         const cardsData = [
-            // KELOMPOK 1: SERANGAN VERBAL
             { id: 1, title: "Flaming", color: "#ff4757", atk: "Tinggi", def: "Medium", rarity: "Agresi Verbal", desc: "Mengirim pesan penuh amarah dan makian di kolom komentar atau chat untuk memancing keributan." },
             { id: 2, title: "Insulting", color: "#ff4757", atk: "Tinggi", def: "Medium", rarity: "Agresi Verbal", desc: "Mengolok-olok kekurangan fisik, penampilan, atau kemampuan seseorang (Body Shaming)." },
             { id: 3, title: "Spamming Hate", color: "#ff4757", atk: "Medium", def: "Rendah", rarity: "Agresi Verbal", desc: "Membanjiri notifikasi seseorang dengan pesan kebencian berulang-ulang hingga mengganggu." },
             { id: 4, title: "Threatening", color: "#ff4757", atk: "Ekstrem", def: "Tinggi", rarity: "Agresi Verbal", desc: "Mengancam akan menyakiti fisik, mendatangi rumah korban, atau membahayakan nyawa." },
             { id: 5, title: "Slurring", color: "#ff4757", atk: "Tinggi", def: "Tinggi", rarity: "Agresi Verbal", desc: "Menggunakan kata-kata kasar yang menghina suku, ras, agama, atau golongan tertentu (SARA)." },
             { id: 6, title: "Mocking", color: "#ff4757", atk: "Medium", def: "Rendah", rarity: "Agresi Verbal", desc: "Menertawakan kegagalan, kesedihan, atau musibah yang dialami orang lain sebagai bahan lelucon." },
-            
-            // KELOMPOK 2: IDENTITAS & PRIVASI
             { id: 7, title: "Impersonation", color: "#00d2d3", atk: "Tinggi", def: "Tinggi", rarity: "Identitas", desc: "Membuat akun palsu memakai nama dan foto teman untuk menipu orang lain atau merusak reputasi." },
             { id: 8, title: "Account Hijack", color: "#00d2d3", atk: "Ekstrem", def: "Tinggi", rarity: "Identitas", desc: "Mencuri kata sandi dan mengambil alih akun orang lain untuk disalahgunakan." },
             { id: 9, title: "Doxing", color: "#00d2d3", atk: "Ekstrem", def: "Ekstrem", rarity: "Identitas", desc: "Menyebarkan data pribadi seperti nomor HP, alamat rumah, atau sekolah teman tanpa izin." },
             { id: 10, title: "Catfishing", color: "#00d2d3", atk: "Tinggi", def: "Medium", rarity: "Identitas", desc: "Menyamar menjadi orang lain (biasanya profil menarik) untuk menipu atau menjebak korban secara emosional." },
             { id: 11, title: "Stalking", color: "#00d2d3", atk: "Medium", def: "Tinggi", rarity: "Identitas", desc: "Memantau gerak-gerik online seseorang secara obsesif, menakutkan, dan mengganggu privasi." },
             { id: 12, title: "Privacy Breach", color: "#00d2d3", atk: "Tinggi", def: "Tinggi", rarity: "Identitas", desc: "Mengintip isi chat pribadi (DM) orang lain dan menyebarkannya ke publik (Screenshot Sebar)." },
-
-            // KELOMPOK 3: MANIPULASI KONTEN (Ungu)
             { id: 13, title: "Shaming Photo", color: "#9c27b0", atk: "Tinggi", def: "Medium", rarity: "Manipulasi", desc: "Mengunggah foto memalukan teman tanpa persetujuan untuk mempermalukannya secara visual." },
             { id: 14, title: "Meme-ing", color: "#9c27b0", atk: "Medium", def: "Rendah", rarity: "Manipulasi", desc: "Mengedit foto teman menjadi lelucon atau meme yang merendahkan harga dirinya." },
             { id: 15, title: "Deepfake", color: "#9c27b0", atk: "Ekstrem", def: "Ekstrem", rarity: "Manipulasi", desc: "Mengubah foto/video teman seolah melakukan hal buruk/asusila menggunakan AI atau editing canggih." },
             { id: 16, title: "Live Shaming", color: "#9c27b0", atk: "Tinggi", def: "Tinggi", rarity: "Manipulasi", desc: "Melakukan live streaming khusus untuk membicarakan keburukan atau aib orang lain kepada follower." },
             { id: 17, title: "Status Mockery", color: "#9c27b0", atk: "Medium", def: "Rendah", rarity: "Manipulasi", desc: "Membuat status atau story yang menyindir secara spesifik (nyinyir) untuk memancing reaksi publik." },
             { id: 18, title: "Video Mocking", color: "#9c27b0", atk: "Tinggi", def: "Tinggi", rarity: "Manipulasi", desc: "Merekam diam-diam teman yang sedang melakukan kesalahan atau kecelakaan lalu mengunggahnya." },
-
-            // KELOMPOK 4: PENGUCILAN SOSIAL (Abu-abu Gelap)
             { id: 19, title: "Group Kick-out", color: "#57606f", atk: "Medium", def: "Rendah", rarity: "Pengucilan", desc: "Sengaja mengeluarkan satu orang dari grup chat kelas atau pertemanan tanpa alasan yang jelas." },
             { id: 20, title: "Silent Treat", color: "#57606f", atk: "Tinggi", def: "Rendah", rarity: "Pengucilan", desc: "Mengajak orang lain untuk kompak mengabaikan pesan, sapaan, atau keberadaan satu orang." },
             { id: 21, title: "Blacklisting", color: "#57606f", atk: "Medium", def: "Medium", rarity: "Pengucilan", desc: "Menghasut orang lain agar tidak mem-follow, berteman, atau berinteraksi dengan seseorang." },
             { id: 22, title: "Exclusion", color: "#57606f", atk: "Rendah", def: "Rendah", rarity: "Pengucilan", desc: "Sengaja tidak mengajak teman tertentu saat bermain game online (mabar) atau aktivitas grup lainnya." },
             { id: 23, title: "Hate Campaign", color: "#57606f", atk: "Ekstrem", def: "Tinggi", rarity: "Pengucilan", desc: "Mengajak orang banyak melakukan 'Cancel Culture' atau membenci seseorang tanpa dasar yang kuat." },
             { id: 24, title: "Voting Bully", color: "#57606f", atk: "Tinggi", def: "Medium", rarity: "Pengucilan", desc: "Membuat polling di media sosial untuk memilih 'siapa yang paling tidak disukai' atau 'paling aneh' di kelas." },
-
-            // KELOMPOK 5: PROVOKASI (Oranye)
             { id: 25, title: "Hoax Spreading", color: "#ff9f43", atk: "Tinggi", def: "Tinggi", rarity: "Provokasi", desc: "Menyebarkan berita bohong atau fitnah agar seseorang dibenci oleh lingkungan sosialnya." },
             { id: 26, title: "Cyber-baiting", color: "#ff9f43", atk: "Medium", def: "Tinggi", rarity: "Provokasi", desc: "Memprovokasi guru atau teman agar marah saat kelas online, lalu merekam reaksinya untuk dipermalukan." },
             { id: 27, title: "Griefing", color: "#ff9f43", atk: "Rendah", def: "Medium", rarity: "Provokasi", desc: "Sengaja merusak hasil karya, bangunan, atau progres game teman hanya untuk kesenangan pribadi." },
             { id: 28, title: "Dogpiling", color: "#ff9f43", atk: "Ekstrem", def: "Tinggi", rarity: "Provokasi", desc: "Ikut-ikutan menghujat orang yang sedang viral (keroyokan) tanpa mengetahui duduk permasalahan sebenarnya." },
             { id: 29, title: "False Report", color: "#ff9f43", atk: "Tinggi", def: "Tinggi", rarity: "Provokasi", desc: "Melaporkan akun teman secara massal (mass report) ke platform padahal dia tidak melakukan kesalahan." },
             { id: 30, title: "Peer Pressure", color: "#ff9f43", atk: "Tinggi", def: "Ekstrem", rarity: "Provokasi", desc: "Memaksa teman melakukan challenge berbahaya atau memalukan demi pengakuan dalam pertemanan." },
-
-            // KELOMPOK 6: ACTION CARDS (Hijau Neon)
             { id: 31, title: "Kartu Lapor", color: "#00e170", atk: "Proteksi", def: "Legal", rarity: "Action Tool", desc: "Melaporkan konten atau akun jahat ke pihak aplikasi (Instagram/TikTok/Game) agar ditindaklanjuti." },
             { id: 32, title: "Kartu Blokir", color: "#00e170", atk: "Proteksi", def: "Instan", rarity: "Action Tool", desc: "Memutuskan akses komunikasi total. Pelaku tidak bisa lagi melihat profil, mengirim pesan, atau menandaimu." },
             { id: 33, title: "Kartu Privasi", color: "#00e170", atk: "Preventif", def: "Aman", rarity: "Action Tool", desc: "Mengatur akun menjadi 'Private', membatasi siapa yang bisa komentar, dan menyaring kata kasar otomatis." },
             { id: 34, title: "Screenshot", color: "#00e170", atk: "Bukti", def: "Penting", rarity: "Action Tool", desc: "Mengambil tangkapan layar bukti chat atau komentar jahat sebelum dihapus pelaku, untuk barang bukti laporan." },
             { id: 35, title: "Restrict", color: "#00e170", atk: "Kontrol", def: "Diam", rarity: "Action Tool", desc: "Membatasi interaksi akun pengganggu tanpa mereka tahu (Shadowban). Komentar mereka hanya terlihat oleh mereka sendiri." },
             { id: 36, title: "Turn Off Comm", color: "#00e170", atk: "Damai", def: "Instan", rarity: "Action Tool", desc: "Mematikan kolom komentar pada postingan tertentu untuk menghentikan perdebatan atau ujaran kebencian." },
-
-            // KELOMPOK 7: WISDOM CARDS (Emas/Kuning)
             { id: 37, title: "Kartu Support", color: "#ffd700", atk: "Empati", def: "Positif", rarity: "Wisdom", desc: "Memberi semangat dan dukungan kepada korban bullying agar mereka tidak merasa sendirian." },
             { id: 38, title: "Verifikasi", color: "#ffd700", atk: "Logika", def: "Kritis", rarity: "Wisdom", desc: "Mengecek kebenaran sebuah berita atau informasi sebelum emosi terpancing dan ikut menyebarkannya." },
             { id: 39, title: "Literasi", color: "#ffd700", atk: "Wawasan", def: "Bijak", rarity: "Wisdom", desc: "Memahami aturan komunitas dan berhenti menyebarkan konten yang belum tentu benar atau bermanfaat." },
@@ -574,15 +518,12 @@
         const themeBtn = document.getElementById('themeBtn');
         const iconSun = document.getElementById('iconSun');
         const iconMoon = document.getElementById('iconMoon');
-        
-        // Elemen Info
         const infoTitle = document.getElementById('infoTitle');
         const infoDesc = document.getElementById('infoDesc');
-        const infoAtk = document.getElementById('infoAtk'); // Impact
-        const infoDef = document.getElementById('infoDef'); // Risk
+        const infoAtk = document.getElementById('infoAtk');
+        const infoDef = document.getElementById('infoDef');
         const rarityBadge = document.getElementById('rarityBadge');
 
-        // SVG ICONS
         const iconGallery = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
         const iconHome = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>`;
 
@@ -591,12 +532,9 @@
         let isGalleryMode = false;
         let cardsSeen = 0;
         let isLightMode = false;
-        
-        // Carousel Logic
         let activeIndex = 0; 
         let cardElements = []; 
 
-        // LOGIKA TEMA (TERANG / GELAP)
         function toggleTheme() {
             isLightMode = !isLightMode;
             if (isLightMode) {
@@ -611,42 +549,34 @@
                 themeBtn.setAttribute('data-tooltip', 'Mode Terang');
             }
             
-            // Update ambient color logic
             if (isGalleryMode && cardElements.length > 0) {
-                // Jika di mode galeri, pertahankan warna kartu yang sedang aktif
                 const currentData = cardsData[cardElements[activeIndex].dataset.id];
                 if (currentData) updateAmbientColor(currentData.color);
             } else {
-                // Jika di halaman depan (Home), sesuaikan dengan background tema
                 updateAmbientColor(isLightMode ? '#e3f2fd' : '#121212');
             }
         }
 
-        // Cek preferensi sistem saat load (Opsional, tapi bagus untuk UX)
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-            // Uncomment baris di bawah jika ingin otomatis ikut sistem saat pertama buka
-            // toggleTheme(); 
+            // toggleTheme(); // Uncomment jika ingin auto-detect system theme
         }
 
         function initCards() {
-            // Render urutan terbalik untuk visual stack
             cardsData.forEach((data, index) => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.dataset.id = index;
                 card.style.borderColor = data.color;
 
-                // STRUKTUR BARU: PLACEHOLDER GAMBAR
                 card.innerHTML = `
                     <div class="card-file-content">
                         <div class="filename-label">Kartu${data.id}.png</div>
-                        <!-- Gambar disembunyikan jika error (belum ada) -->
-                        <img src="Kartu${data.id}.png" class="card-real-img" onerror="this.style.opacity='0'">
+                        <!-- OPTIMASI: Lazy loading & decoding async -->
+                        <img src="Kartu${data.id}.png" class="card-real-img" onerror="this.style.opacity='0'" loading="lazy" decoding="async">
                     </div>
                 `;
                 
                 const cover = document.getElementById('coverCard');
-                // Ensure cover exists before trying to insert before it
                 if (cover && cover.parentNode === stack) {
                     stack.insertBefore(card, cover);
                 } else {
@@ -655,7 +585,6 @@
             });
         }
         
-        // Set icon awal
         mainButton.innerHTML = iconGallery;
         initCards();
 
@@ -679,26 +608,27 @@
         function startGame() {
             isStarted = true;
             isAnimating = true; 
-            ambientBg.classList.add('active');
+            
+            if (isGalleryMode && cardElements.length > 0) {
+                const currentData = cardsData[cardElements[activeIndex].dataset.id];
+                if (currentData) updateAmbientColor(currentData.color);
+            } else {
+                // Di mode awal, kita belum punya kartu aktif, jadi pakai bg tema
+                // Tapi kita perlu set class active ke ambientBg
+                ambientBg.classList.add('active');
+                updateAmbientColor(isLightMode ? '#e3f2fd' : '#121212');
+            }
+            
             stage.classList.add('active'); 
 
             const cover = document.getElementById('coverCard');
             if (cover) {
-                // ANIMASI BARU: FLIP KE KANAN
-                // Kita beri transisi yang smooth
                 cover.style.transition = "transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.6s ease-in";
-                
-                // rotateY(180deg): Membalik kartu seperti membuka halaman buku/kartu
-                // translateX(50%): Sedikit geser ke kanan agar tidak menutupi kartu di bawahnya saat memudar
                 cover.style.transform = "perspective(1000px) rotateY(180deg) translateX(50%)";
-                
-                // Hilangkan opacity agar transisi ke kartu berikutnya mulus
                 cover.style.opacity = "0";
-                
                 setTimeout(() => cover.remove(), 800);
             }
 
-            // Buka kartu pertama sedikit lebih cepat setelah flip dimulai
             setTimeout(() => {
                 swapBottomToTop();
             }, 500);
@@ -722,16 +652,14 @@
             
             setTimeout(() => {
                 updateInfoDisplay(data);
+                updateAmbientColor(data.color); // Update warna background saat kartu dibuka
                 cardsSeen++; 
             }, 300);
 
             setTimeout(() => {
                 bottomCard.classList.remove('animating');
                 bottomCard.style.transform = `rotate(${randomRot}deg) translate(0,0)`; 
-                
-                // Pindahkan elemen DOM ke paling akhir
                 stack.appendChild(bottomCard);
-                
                 isAnimating = false;
             }, 600); 
         }
@@ -741,7 +669,6 @@
             stage.classList.add('gallery-mode');
             stage.classList.add('scattering'); 
             
-            // Ubah tombol jadi Home
             mainButton.innerHTML = iconHome;
             mainButton.setAttribute('data-tooltip', 'Kembali ke Beranda');
 
@@ -757,7 +684,6 @@
             setTimeout(() => { stage.classList.remove('scattering'); }, 1500);
         }
 
-        // FUNGSI RESET KE HOME
         function resetToHome() {
             isStarted = false;
             isGalleryMode = false;
@@ -765,21 +691,16 @@
             cardsSeen = 0;
             activeIndex = 0;
 
-            // Reset UI Classes
             stage.classList.remove('active', 'gallery-mode', 'scattering');
             ambientBg.classList.remove('active');
             
-            // Reset Button Icon
             mainButton.innerHTML = iconGallery;
             mainButton.setAttribute('data-tooltip', 'Langsung ke Mode Galeri');
 
-            // Reset Info Panel
             document.getElementById('infoPanel').style.opacity = 0;
 
-            // Re-build Stack
             stack.innerHTML = '';
             
-            // Create Cover
             const cover = document.createElement('div');
             cover.className = 'card';
             cover.id = 'coverCard';
@@ -791,24 +712,14 @@
             `;
             stack.appendChild(cover);
 
-            // Re-init cards
             initCards();
-            
-            // Reset background color based on theme
-            if (isLightMode) {
-                document.documentElement.style.setProperty('--dynamic-bg', '#e3f2fd');
-            } else {
-                document.documentElement.style.setProperty('--dynamic-bg', '#121212');
-            }
+            updateAmbientColor(isLightMode ? '#e3f2fd' : '#121212');
         }
 
-        // FUNGSI SHORTCUT (BUTTON)
         function handleShortcutClick() {
             if (isGalleryMode) {
-                // Jika sedang di galeri, tombol ini berfungsi sebagai Home
                 resetToHome();
             } else {
-                // Jika di home/intro, tombol ini berfungsi masuk Galeri
                 if (!isStarted) {
                     isStarted = true;
                     ambientBg.classList.add('active');
@@ -822,16 +733,24 @@
 
         function updateCarousel3D() {
             const count = cardElements.length;
+            const VISIBLE_RANGE = 2; // OPTIMASI: Hanya render 2 kartu kiri/kanan
+
             cardElements.forEach((card, i) => {
                 let offset = (i - activeIndex) % count;
                 if (offset < 0) offset += count;
                 if (offset > count / 2) offset -= count;
 
+                // OPTIMASI: Sembunyikan kartu yang jauh
+                if (Math.abs(offset) > VISIBLE_RANGE) {
+                    card.style.display = 'none';
+                    return;
+                }
+                card.style.display = 'flex';
+
                 const isMobile = window.innerWidth < 600;
-                const dist = isMobile ? 80 : 200; // Adjusted for desktop size
+                const dist = isMobile ? 80 : 200;
 
                 const translateX = offset * dist; 
-                // Efek kedalaman Z agar tidak clipping
                 const translateZ = -Math.abs(offset) * 80; 
 
                 const scale = offset === 0 ? 1.1 : 0.85; 
@@ -934,10 +853,8 @@
                     rarityBadge.style.display = 'flex';
                     rarityBadge.innerText = data.rarity;
                     rarityBadge.style.backgroundColor = data.color;
-                    rarityBadge.style.color = '#fff'; // Default text color
+                    rarityBadge.style.color = '#fff'; 
                     
-                    // Warna-warna cerah membutuhkan teks hitam agar terbaca
-                    // Biru Cyan, Emas/Kuning, Hijau Neon
                     const lightColors = ['#00d2d3', '#ffd700', '#00e170']; 
                     if (lightColors.includes(data.color)) {
                         rarityBadge.style.color = '#000';
@@ -952,18 +869,14 @@
             if(color) document.documentElement.style.setProperty('--dynamic-bg', color);
         }
 
-        // 8. KONTROL KEYBOARD (Fitur Baru)
         window.addEventListener('keydown', (e) => {
-            // Hanya aktif jika sudah masuk mode galeri
             if (!isGalleryMode) return;
 
             if (e.key === 'ArrowRight') {
-                // Geser ke kanan (Next)
                 activeIndex++;
                 if (activeIndex >= cardElements.length) activeIndex = 0;
                 updateCarousel3D();
             } else if (e.key === 'ArrowLeft') {
-                // Geser ke kiri (Prev)
                 activeIndex--;
                 if (activeIndex < 0) activeIndex = cardElements.length - 1;
                 updateCarousel3D();
